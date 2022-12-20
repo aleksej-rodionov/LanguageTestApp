@@ -55,23 +55,23 @@ object AuthModule {
         return AuthRepoImpl(authApi)
     }
 
-    @Provides
-    @Singleton
-    fun provideRegisterUseCases(authRepo: AuthRepo): AuthUseCases {
-        return AuthUseCases(
-            register = Register(authRepo),
-            validateEmail = ValidateEmail(),
-            validatePassword = ValidatePassword(),
-            validateRepeatedPassword = ValidateRepeatedPassword(),
-            validateTerms = ValidateTerms()
-        )
-    }
-
 //    @Provides
 //    @Singleton
-//    fun provideRegister(authRepo: AuthRepo): Register {
-//        return Register(authRepo)
+//    fun provideRegisterUseCases(authRepo: AuthRepo): AuthUseCases {
+//        return AuthUseCases(
+//            register = Register(authRepo),
+//            validateEmail = ValidateEmail(),
+//            validatePassword = ValidatePassword(),
+//            validateRepeatedPassword = ValidateRepeatedPassword(),
+//            validateTerms = ValidateTerms()
+//        )
 //    }
+
+    @Provides
+    @Singleton
+    fun provideRegister(authRepo: AuthRepo): Register {
+        return Register(authRepo)
+    }
 
     const val AUTH_URL = "http://localhost:4000/"
 }

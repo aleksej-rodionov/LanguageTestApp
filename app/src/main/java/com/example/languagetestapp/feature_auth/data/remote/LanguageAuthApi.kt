@@ -1,6 +1,7 @@
 package com.example.languagetestapp.feature_auth.data.remote
 
 import com.example.languagetestapp.feature_auth.data.model.AuthResponse
+import com.example.languagetestapp.feature_auth.data.model.LoginUserDto
 import com.example.languagetestapp.feature_auth.data.model.TokenDto
 import com.example.languagetestapp.feature_auth.data.model.UserDto
 import retrofit2.http.Body
@@ -16,7 +17,7 @@ interface LanguageAuthApi {
 
     @FormUrlEncoded
     @POST("auth/login")
-    suspend fun login(@Body user: UserDto): AuthResponse<TokenDto>
+    suspend fun login(@Body user: LoginUserDto): AuthResponse<TokenDto>
 
     @FormUrlEncoded
     @POST("auth/refresh-token")

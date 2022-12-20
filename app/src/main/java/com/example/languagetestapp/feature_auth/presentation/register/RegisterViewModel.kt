@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.languagetestapp.feature_auth.domain.use_case.AuthUseCases
+import com.example.languagetestapp.feature_auth.domain.use_case.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -14,41 +14,45 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val authUseCases: AuthUseCases
+    private val validateEmail: ValidateEmail,
+    private val validatePassword: ValidatePassword,
+    private val validateRepeatedPassword: ValidateRepeatedPassword,
+    private val validateTerms: ValidateTerms,
+    private val register: Register
 ): ViewModel() {
 
-    var registerFormState by mutableStateOf(RegisterFormState())
+    var state by mutableStateOf(RegisterState())
 
-    private val _uiEvent = Channel<RegisterFormUiEvent>()
+    private val _uiEvent = Channel<RegisterUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    fun onAction(action: RegisterFormAction) {
+    fun onAction(action: RegisterAction) {
         when(action) {
-            is RegisterFormAction.EmailChanged -> {
-                registerFormState = registerFormState.copy(email = action.email)
+            is RegisterAction.EmailChanged -> {
+                state = state.copy(email = action.email)
             }
-            is RegisterFormAction.PasswordChanged -> {
-                registerFormState = registerFormState.copy(password = action.password)
+            is RegisterAction.PasswordChanged -> {
+                state = state.copy(password = action.password)
             }
-            is RegisterFormAction.RepeatedPasswordChanged -> {
-                registerFormState = registerFormState.copy(repeatedPassword = action.repeatedPassword)
+            is RegisterAction.RepeatedPasswordChanged -> {
+                state = state.copy(repeatedPassword = action.repeatedPassword)
             }
-            is RegisterFormAction.AcceptTerms -> {
-                registerFormState = registerFormState.copy(termsAccepted = action.accepted)
+            is RegisterAction.AcceptTerms -> {
+                state = state.copy(termsAccepted = action.accepted)
             }
-            is RegisterFormAction.Submit -> {
+            is RegisterAction.Submit -> {
                 submitData()
             }
         }
     }
 
     private fun submitData() {
-        val emailResult = authUseCases.validateEmail.execute(registerFormState.email)
-        val passwordResult = authUseCases.validatePassword.execute(registerFormState.password)
-        val repeatedPasswordResult = authUseCases.validateRepeatedPassword.execute(
-            registerFormState.password, registerFormState.repeatedPassword
+        val emailResult = validateEmail.execute(state.email)
+        val passwordResult = validatePassword.execute(state.password, false)
+        val repeatedPasswordResult = validateRepeatedPassword.execute(
+            state.password, state.repeatedPassword
         )
-        val termsResult = authUseCases.validateTerms.execute(registerFormState.termsAccepted)
+        val termsResult = validateTerms.execute(state.termsAccepted)
 
         val hasError = listOf(
             emailResult, passwordResult, repeatedPasswordResult, termsResult
@@ -57,7 +61,7 @@ class RegisterViewModel @Inject constructor(
         }
 
         if (hasError) {
-            registerFormState = registerFormState.copy(
+            state = state.copy(
                 emailError = emailResult.errorMessage,
                 passwordError = passwordResult.errorMessage,
                 repeatedPasswordError = repeatedPasswordResult.errorMessage,
@@ -65,14 +69,15 @@ class RegisterViewModel @Inject constructor(
             )
             return
         }
+
         viewModelScope.launch {
-            authUseCases.register.execute(registerFormState.email, registerFormState.password)
-            _uiEvent.send(RegisterFormUiEvent.ValidationSuccess)
+            val registeredUser = register.execute(state.email, state.password)
+            // todo onSuccess _uiEvent.send(RegisterFormUiEvent.ValidationSuccess)
         }
     }
 }
 
-data class RegisterFormState(
+data class RegisterState(
     val email: String = "",
     val emailError: String? = null,
     val password: String = "",
@@ -83,17 +88,17 @@ data class RegisterFormState(
     val termsError: String? = null
 )
 
-sealed class RegisterFormAction() {
-    data class EmailChanged(val email: String): RegisterFormAction()
-    data class PasswordChanged(val password: String): RegisterFormAction()
-    data class RepeatedPasswordChanged(val repeatedPassword: String): RegisterFormAction()
-    data class AcceptTerms(val accepted: Boolean): RegisterFormAction()
+sealed class RegisterAction() {
+    data class EmailChanged(val email: String): RegisterAction()
+    data class PasswordChanged(val password: String): RegisterAction()
+    data class RepeatedPasswordChanged(val repeatedPassword: String): RegisterAction()
+    data class AcceptTerms(val accepted: Boolean): RegisterAction()
 
-    object Submit: RegisterFormAction()
+    object Submit: RegisterAction()
 }
 
-sealed class RegisterFormUiEvent() {
-    object ValidationSuccess: RegisterFormUiEvent()
+sealed class RegisterUiEvent() {
+    object ValidationSuccess: RegisterUiEvent()
 //    object PopBackStack: RegisterFormUiEvent()
 //    data class Navigate(val route: String): RegisterFormUiEvent()
 }
