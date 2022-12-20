@@ -15,7 +15,7 @@
         android:theme="@style/Theme.LanguageTestApp"
         tools:targetApi="31">
         <activity
-            android:name=".feature_splash.presentation.LanguageSplashActivity"
+            android:name=".feature_splash.presentation.SplashCustomActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.LanguageTestApp">

@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LanguageSplashViewModel @Inject constructor(
+class SplashCustomViewModel @Inject constructor(
 
 ): ViewModel() {
 
