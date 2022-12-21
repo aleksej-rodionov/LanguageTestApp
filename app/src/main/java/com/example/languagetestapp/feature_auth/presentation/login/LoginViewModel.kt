@@ -66,7 +66,16 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             Log.d(TAG_AUTH, "login: EXECUTE")
-            login.execute(state.email, state.password)
+            val resp = login.execute(state.email, state.password)
+            if (resp.data != null) {
+                Log.d(TAG_AUTH, "login response: ${resp.data ?: "Xuj znajet kakoj kluc"}")
+                // todo parse token and save accessToken and refreshToken to prefStore
+                _uiEvent.send(LoginUiEvent.ToNoteActivity)
+
+            } else {
+                Log.d(TAG_AUTH, "login response: ${resp.message ?: "Xuj znajet"}")
+                // todo show snackbar with the Error Message
+            }
         }
     }
 }
@@ -87,5 +96,6 @@ sealed class LoginAction() {
 
 sealed class LoginUiEvent() {
     data class Navigate(val route: String): LoginUiEvent()
+    object ToNoteActivity: LoginUiEvent()
 }
 

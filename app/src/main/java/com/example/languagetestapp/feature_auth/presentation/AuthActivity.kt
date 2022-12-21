@@ -2,6 +2,7 @@ package com.example.languagetestapp.feature_auth.presentation
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.compose.NavHost
@@ -15,7 +16,7 @@ import com.example.languagetestapp.ui.theme.LanguageTestAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AuthActivity: AppCompatActivity() {
+class AuthActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -25,22 +26,30 @@ class AuthActivity: AppCompatActivity() {
                     navController = navController,
                     startDestination = AuthDest.LoginDest.route,
                     builder =  {
+
                         composable(
                             route = AuthDest.LoginDest.route
                         ) {
                             LoginScreen(
                                 onNavigate = {
                                     navController.navigate(it.route)
+                                },
+                                toNoteActivity = {
+                                    toNoteActivity()
                                 }
                             )
                         }
+
                         composable(
                             route = AuthDest.RegisterDest.route
                         ) {
                             RegisterScreen(
-                                // todo functions as args
+                                toNoteActivity = {
+                                    toNoteActivity()
+                                }
                             )
                         }
+
                     })
             }
         }

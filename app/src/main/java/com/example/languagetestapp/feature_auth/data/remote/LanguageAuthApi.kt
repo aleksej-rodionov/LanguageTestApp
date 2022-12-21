@@ -12,18 +12,17 @@ import retrofit2.http.POST
 interface LanguageAuthApi {
 
     @FormUrlEncoded
-    @POST("auth/register")
+    @POST("/auth/register")
     suspend fun register(@Body user: UserDto): AuthResponse<UserDto>
 
-    @FormUrlEncoded
-    @POST("auth/login")
+    @POST("/auth/login")
     suspend fun login(@Body user: LoginUserDto): AuthResponse<TokenDto>
 
     @FormUrlEncoded
-    @POST("auth/refresh-token")
+    @POST("/auth/refresh-token")
     suspend fun refreshToken(@Body refreshToken: String): AuthResponse<String>
 
     @FormUrlEncoded
-    @DELETE("auth/logout")
+    @DELETE("/auth/logout")
     suspend fun logout(@Body refreshToken: String): AuthResponse<String>
 }

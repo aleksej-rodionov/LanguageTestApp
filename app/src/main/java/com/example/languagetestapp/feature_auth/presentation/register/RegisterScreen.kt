@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RegisterScreen(
-
+    toNoteActivity: () -> Unit, // todo fire it from somewhere
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val state = viewModel.state

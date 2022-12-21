@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.languagetestapp">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".LanguageApiTestApp"
         android:allowBackup="true"
@@ -10,6 +12,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LanguageTestApp"
@@ -24,6 +27,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".feature_auth.presentation.AuthActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LanguageTestApp">
+
+        </activity>
+        <activity android:name=".feature_notes.presentation.NoteActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LanguageTestApp">
+
         </activity>
     </application>
 

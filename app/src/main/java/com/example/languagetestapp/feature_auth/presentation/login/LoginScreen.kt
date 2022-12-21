@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun LoginScreen(
     onNavigate: (LoginUiEvent.Navigate) -> Unit,
+    toNoteActivity: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
 
@@ -30,6 +31,9 @@ fun LoginScreen(
             when (event) {
                 is LoginUiEvent.Navigate -> {
                     onNavigate(event)
+                }
+                is LoginUiEvent.ToNoteActivity -> {
+                    toNoteActivity()
                 }
             }
         }

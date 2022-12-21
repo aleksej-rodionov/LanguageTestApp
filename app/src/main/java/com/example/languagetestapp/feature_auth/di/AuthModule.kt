@@ -36,7 +36,7 @@ object AuthModule {
     @Auth
     fun provideRetrofitAuth(@Auth okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(AUTH_URL)
+            .baseUrl(AUTH_URL_BRANCH)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -44,7 +44,6 @@ object AuthModule {
 
     @Provides
     @Singleton
-    @Auth
     fun provideAuthApi(@Auth retrofit: Retrofit): LanguageAuthApi {
         return retrofit.create(LanguageAuthApi::class.java)
     }
@@ -55,17 +54,20 @@ object AuthModule {
         return AuthRepoImpl(authApi)
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideRegisterUseCases(authRepo: AuthRepo): AuthUseCases {
-//        return AuthUseCases(
-//            register = Register(authRepo),
-//            validateEmail = ValidateEmail(),
-//            validatePassword = ValidatePassword(),
-//            validateRepeatedPassword = ValidateRepeatedPassword(),
-//            validateTerms = ValidateTerms()
-//        )
-//    }
+
+
+    //====================AUTH USE CASES====================
+/*    @Provides
+    @Singleton
+    fun provideRegisterUseCases(authRepo: AuthRepo): AuthUseCases {
+        return AuthUseCases(
+            register = Register(authRepo),
+            validateEmail = ValidateEmail(),
+            validatePassword = ValidatePassword(),
+            validateRepeatedPassword = ValidateRepeatedPassword(),
+            validateTerms = ValidateTerms()
+        )
+    }*/
 
     @Provides
     @Singleton
@@ -73,5 +75,32 @@ object AuthModule {
         return Register(authRepo)
     }
 
+    @Provides
+    @Singleton
+    fun provideLogin(authRepo: AuthRepo): Login {
+        return Login(authRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideValidateEmail() = ValidateEmail()
+
+    @Provides
+    @Singleton
+    fun provideValidatePassword() = ValidatePassword()
+
+    @Provides
+    @Singleton
+    fun provideValidateRepeatedPassword() = ValidateRepeatedPassword()
+
+    @Provides
+    @Singleton
+    fun provideValidateTerms() = ValidateTerms()
+    //====================AUTH USE CASES END====================
+
+
+
     const val AUTH_URL = "http://localhost:4000/"
+    const val AUTH_URL_MACHINE = "http://10.0.2.2:4000/"
+    const val AUTH_URL_BRANCH = "http://192.168.1.239:4000/"
 }
