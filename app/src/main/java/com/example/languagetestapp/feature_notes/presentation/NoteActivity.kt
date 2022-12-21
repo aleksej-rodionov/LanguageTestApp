@@ -40,6 +40,7 @@ class NoteActivity : ComponentActivity() {
                         ) {
                             NoteDetailsScreen()
                         }
+
                     })
             }
         }
