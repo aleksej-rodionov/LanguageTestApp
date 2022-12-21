@@ -1,7 +1,7 @@
 package com.example.languagetestapp.feature_auth.data.repo
 
 import com.example.languagetestapp.core.util.Resource
-import com.example.languagetestapp.feature_auth.data.model.LoginUserDto
+import com.example.languagetestapp.feature_auth.data.remote.model.LoginUserDto
 import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
 import com.example.languagetestapp.feature_auth.domain.model.Token
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo

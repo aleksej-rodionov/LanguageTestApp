@@ -1,4 +1,4 @@
-package com.example.languagetestapp.feature_auth.data.model
+package com.example.languagetestapp.feature_auth.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 

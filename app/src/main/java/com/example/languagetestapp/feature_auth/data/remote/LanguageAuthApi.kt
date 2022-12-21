@@ -1,9 +1,9 @@
 package com.example.languagetestapp.feature_auth.data.remote
 
-import com.example.languagetestapp.feature_auth.data.model.AuthResponse
-import com.example.languagetestapp.feature_auth.data.model.LoginUserDto
-import com.example.languagetestapp.feature_auth.data.model.TokenDto
-import com.example.languagetestapp.feature_auth.data.model.UserDto
+import com.example.languagetestapp.feature_auth.data.remote.model.AuthResponse
+import com.example.languagetestapp.feature_auth.data.remote.model.LoginUserDto
+import com.example.languagetestapp.feature_auth.data.remote.model.TokenDto
+import com.example.languagetestapp.feature_auth.data.remote.model.UserDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.FormUrlEncoded
