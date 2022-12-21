@@ -7,7 +7,7 @@ interface NoteRepo {
 
     suspend fun createNote(note: NoteDto): NoteResponse<NoteDto>
 
-    suspend fun getNotesByEmail(email: String): NoteResponse<List<NoteDto>>
+    suspend fun getNotes(): NoteResponse<List<NoteDto>>
 
-    suspend fun getAllNotes(): NoteResponse<List<NoteDto>>
+    suspend fun getNoteById(noteId: String): NoteResponse<NoteDto>
 }

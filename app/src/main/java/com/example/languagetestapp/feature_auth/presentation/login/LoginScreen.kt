@@ -35,6 +35,11 @@ fun LoginScreen(
                 is LoginUiEvent.ToNoteActivity -> {
                     toNoteActivity()
                 }
+                is LoginUiEvent.SnackbarMsg -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.msg
+                    )
+                }
             }
         }
     })

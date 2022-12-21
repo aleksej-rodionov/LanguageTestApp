@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.languagetestapp.core.util.Constants.TAG_AUTH
+import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 import com.example.languagetestapp.feature_auth.domain.use_case.Login
 import com.example.languagetestapp.feature_auth.domain.use_case.ValidateEmail
 import com.example.languagetestapp.feature_auth.domain.use_case.ValidatePassword
@@ -67,9 +67,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d(TAG_AUTH, "login: EXECUTE")
             val resp = login.execute(state.email, state.password)
+
             if (resp.data != null) {
-                Log.d(TAG_AUTH, "login response: ${resp.data ?: "Xuj znajet kakoj kluc"}")
-                // todo parse token and save accessToken and refreshToken to prefStore
                 _uiEvent.send(LoginUiEvent.ToNoteActivity)
 
             } else {
@@ -97,5 +96,6 @@ sealed class LoginAction() {
 sealed class LoginUiEvent() {
     data class Navigate(val route: String): LoginUiEvent()
     object ToNoteActivity: LoginUiEvent()
+    data class SnackbarMsg(val msg: String): LoginUiEvent()
 }
 

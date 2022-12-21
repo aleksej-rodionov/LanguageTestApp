@@ -14,8 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.languagetestapp.core.util.Constants.TAG_AUTH
-import kotlinx.coroutines.flow.collectLatest
+import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 
 @Composable
 fun RegisterScreen(

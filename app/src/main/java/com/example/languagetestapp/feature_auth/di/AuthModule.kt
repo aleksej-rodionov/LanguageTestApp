@@ -1,7 +1,11 @@
 package com.example.languagetestapp.feature_auth.di
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
+import com.example.languagetestapp.feature_auth.data.local.AuthStorageGatewayImpl
 import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
 import com.example.languagetestapp.feature_auth.data.repo.AuthRepoImpl
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
@@ -18,6 +22,20 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AuthModule {
+
+    private const val SHARED_PREFS_AUTH = "shared_prefs_auth"
+
+    @Provides
+    @Singleton
+    fun provideAuthStorage(app: Application): SharedPreferences {
+        return app.getSharedPreferences(SHARED_PREFS_AUTH, Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthStorageGateway(prefs: SharedPreferences): AuthStorageGateway {
+        return AuthStorageGatewayImpl(prefs)
+    }
 
     @Provides
     @Singleton
@@ -50,8 +68,12 @@ object AuthModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepo(authApi: LanguageAuthApi): AuthRepo {
-        return AuthRepoImpl(authApi)
+    fun provideAuthRepo(
+        authApi: LanguageAuthApi,
+//        authStorageGateway: AuthStorageGateway
+        authStorageGateway: AuthStorageGateway
+    ): AuthRepo {
+        return AuthRepoImpl(authApi, authStorageGateway)
     }
 
 

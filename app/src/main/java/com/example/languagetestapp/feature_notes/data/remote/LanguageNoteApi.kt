@@ -9,10 +9,10 @@ interface LanguageNoteApi {
     @POST("/notes")
     suspend fun createNote(@Body note: NoteDto): NoteResponse<NoteDto>
 
+    @GET("/notes")
+    suspend fun getNotes(): NoteResponse<List<NoteDto>>
+
     @FormUrlEncoded
     @GET("/notes")
-    suspend fun getNotesByEmail(@Field("email") email: String): NoteResponse<List<NoteDto>>
-
-    @GET("/notes")
-    suspend fun getAllNotes(): NoteResponse<List<NoteDto>>
+    suspend fun getNoteById(@Field("noteid") noteId: String): NoteResponse<NoteDto>
 }
