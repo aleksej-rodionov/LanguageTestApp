@@ -1,11 +1,18 @@
 package com.example.languagetestapp.feature_notes.presentation.note_list
 
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.languagetestapp.feature_notes.domain.model.Note
 
@@ -40,8 +47,33 @@ fun NoteListScreen(
 
             }
         }
-    ) {
+    ) { pv ->
+        Box(
+            modifier = Modifier
+                .background(MaterialTheme.colors.background)
+        ) {
 
+            LazyColumn(
+                modifier = Modifier
+                    .padding(pv)
+                    .fillMaxSize()
+            ) {
+                items(state.notes.size) { index ->
+                    val note = state.notes[index]
+                    if (index > 0) {
+                        Spacer(modifier = Modifier.padding(8.dp))
+                    }
+                    // todo NoteItem(note = note)
+                    if (index < state.notes.size - 1) {
+                        Divider()
+                    }
+                }
+            }
+
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+        }
     }
 }
 

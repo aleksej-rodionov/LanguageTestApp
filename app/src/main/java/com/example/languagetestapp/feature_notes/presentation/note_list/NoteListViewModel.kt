@@ -1,10 +1,13 @@
 package com.example.languagetestapp.feature_notes.presentation.note_list
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
+import com.example.languagetestapp.feature_auth.presentation.login.LoginState
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,8 +22,7 @@ class NoteListViewModel @Inject constructor(
     private val noteRepo: NoteRepo
 ): ViewModel() {
 
-    private val _state = mutableStateOf(NoteListState())
-    val state: State<NoteListState> = _state
+    var state by mutableStateOf(NoteListState())
 
     private val _uiEvent = Channel<NoteListUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -30,24 +32,24 @@ class NoteListViewModel @Inject constructor(
     }
 
     private fun fetchNotes() = viewModelScope.launch {
-        _state.value = state.value.copy(isLoading = true)
+        state = state.copy(isLoading = true)
         val result = noteRepo.getNotes()
         when (result) {
             is Resource.Success -> {
-                _state.value = state.value.copy(
+                state = state.copy(
                     notes = result.data ?: emptyList(),
                     isLoading = false
                 )
             }
             is Resource.Error -> {
-                _state.value = state.value.copy(
+                state = state.copy(
                     notes = result.data ?: emptyList(),
                     isLoading = false
                 )
                 _uiEvent.send(NoteListUiEvent.SnackbarMsg(result.message ?: "Unknown error"))
             }
             is Resource.Loading -> { // never happens since is never sent from NoteRepo
-                _state.value = state.value.copy(
+                state = state.copy(
                     notes = result.data ?: emptyList(),
                     isLoading = true
                 )
