@@ -1,6 +1,7 @@
 package com.example.languagetestapp.feature_notes.di
 
 import android.app.Application
+import android.util.Log
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.languagetestapp.BuildConfig
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
@@ -21,6 +22,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
+private const val TAG_NOTE_MODULE = "NoteModule"
+
 @Module
 @InstallIn(SingletonComponent::class)
 object NoteModule {
@@ -40,6 +43,7 @@ object NoteModule {
                 .method(originalRequest.method, originalRequest.body)
                 .removeHeader(AUTHORIZATION).apply {
                     authStorageGateway.fetchAccessToken()?.let {
+                        Log.d(TAG_NOTE_MODULE, "fetchAccessToken = ${it}")
                         addHeader(AUTHORIZATION, "$BEARER$it")
                     }
                 }
@@ -53,7 +57,6 @@ object NoteModule {
         }
 
         // todo refresh token?
-        
 
         return builder.build()
     }
@@ -63,7 +66,7 @@ object NoteModule {
     @Note
     fun provideRetrofitNote(@Note okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL_BRANCH)
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -85,7 +88,7 @@ object NoteModule {
 
 
 
-    const val BASE_URL = "http://localhost:3000/"
+    const val BASE_URL = "http://192.168.16.103:3000/"
     const val BASE_URL_MACHINE = "http://10.0.2.2:3000/"
     const val BASE_URL_BRANCH = "http://192.168.1.239:3000/"
 

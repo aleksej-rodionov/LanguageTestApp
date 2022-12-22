@@ -1,7 +1,7 @@
 package com.example.languagetestapp.feature_notes.data.remote
 
-import com.example.languagetestapp.feature_notes.data.model.NoteDto
-import com.example.languagetestapp.feature_notes.data.model.NoteResponse
+import com.example.languagetestapp.feature_notes.data.remote.model.NoteDto
+import com.example.languagetestapp.feature_notes.data.remote.model.NoteResponse
 import retrofit2.http.*
 
 interface LanguageNoteApi {

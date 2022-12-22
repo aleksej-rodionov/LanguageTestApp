@@ -1,10 +1,8 @@
 package com.example.languagetestapp.feature_notes.presentation.note_list
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -29,7 +27,7 @@ fun NoteListScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is NoteListUiEvent.Navigate -> {
-                    // todo
+                    onNavigate(event)
                 }
                 is NoteListUiEvent.SnackbarMsg -> {
                     scaffoldState.snackbarHostState.showSnackbar(event.msg)
@@ -63,7 +61,16 @@ fun NoteListScreen(
                     if (index > 0) {
                         Spacer(modifier = Modifier.padding(8.dp))
                     }
-                    // todo NoteItem(note = note)
+                    NoteItem(
+                        note = note,
+                        onAction = viewModel::onAction,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                // todo viewModel.onAction(NoteListAction.OnNoteClick(note))
+                            }
+                            .padding(16.dp)
+                    )
                     if (index < state.notes.size - 1) {
                         Divider()
                     }

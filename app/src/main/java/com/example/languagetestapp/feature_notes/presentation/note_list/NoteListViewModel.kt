@@ -62,6 +62,12 @@ class NoteListViewModel @Inject constructor(
             is NoteListAction.OnCreateNoteClick -> {
                 // todo create note logic
             }
+            is NoteListAction.OnDeleteNoteClick -> {
+                // todo
+            }
+            is NoteListAction.OnCompletedChanged -> {
+                // todo
+            }
         }
     }
 }
@@ -73,6 +79,9 @@ data class NoteListState(
 
 sealed class NoteListAction {
     object OnCreateNoteClick: NoteListAction()
+    data class OnNoteClick(val note: Note): NoteListAction()
+    data class OnDeleteNoteClick(val note: Note): NoteListAction()
+    data class OnCompletedChanged(val note: Note, val checked: Boolean): NoteListAction()
 }
 
 sealed class NoteListUiEvent {
