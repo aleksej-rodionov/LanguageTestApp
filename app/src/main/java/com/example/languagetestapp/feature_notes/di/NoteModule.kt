@@ -2,6 +2,7 @@ package com.example.languagetestapp.feature_notes.di
 
 import android.app.Application
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.example.languagetestapp.BuildConfig
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
 import com.example.languagetestapp.feature_notes.data.remote.LanguageNoteApi
 import com.example.languagetestapp.feature_notes.data.repo.NoteRepoImpl
@@ -12,7 +13,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
@@ -22,11 +25,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NoteModule {
 
-//    @Provides
-//    @Singleton
-//    @ApplicationScope
-//    fun provideApplicationScope() = CoroutineScope(SupervisorJob())
-
     @Provides
     @Singleton
     @Note
@@ -35,9 +33,6 @@ object NoteModule {
         authStorageGateway: AuthStorageGateway
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
-//            .connectTimeout(40, TimeUnit.SECONDS)
-//            .readTimeout(40, TimeUnit.SECONDS)
-//            .writeTimeout(40, TimeUnit.SECONDS)
 
         builder.addInterceptor {
             val originalRequest = it.request()
@@ -53,16 +48,12 @@ object NoteModule {
             it.proceed(request)
         }
 
-        builder.addInterceptor(ChuckerInterceptor(app.applicationContext))
-
-        builder.authenticator { _, response ->
-            synchronized(this) {
-                val refreshToken = authStorageGateway.fetchRefreshToken()
-                val curAccessToken = authStorageGateway.fetchAccessToken()
-
-
-            }
+        if (BuildConfig.DEBUG) {
+            builder.addInterceptor(ChuckerInterceptor(app.applicationContext))
         }
+
+        // todo refresh token?
+        
 
         return builder.build()
     }
@@ -101,7 +92,3 @@ object NoteModule {
     const val AUTHORIZATION = "Authorization"
     const val BEARER = "Bearer "
 }
-
-//@Retention(AnnotationRetention.RUNTIME)
-//@Qualifier
-//annotation class ApplicationScope

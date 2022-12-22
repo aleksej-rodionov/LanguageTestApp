@@ -6,11 +6,13 @@ import com.google.gson.annotations.SerializedName
 data class TokenDto(
     @SerializedName("accessToken")
     val accessToken: String,
+    @SerializedName("accessTokenExp")
+    val accessTokenExp: Long,
     @SerializedName("refreshToken")
     val refreshToken: String
 ) {
 
     fun toToken(): Token {
-        return Token(accessToken, refreshToken)
+        return Token(accessToken, accessTokenExp, refreshToken)
     }
 }

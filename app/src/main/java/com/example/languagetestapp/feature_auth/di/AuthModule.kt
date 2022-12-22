@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.example.languagetestapp.BuildConfig
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGatewayImpl
 import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
@@ -45,7 +46,11 @@ object AuthModule {
 //            .connectTimeout(40, TimeUnit.SECONDS)
 //            .readTimeout(40, TimeUnit.SECONDS)
 //            .writeTimeout(40, TimeUnit.SECONDS)
-        builder.addInterceptor(ChuckerInterceptor(app.applicationContext))
+
+        if (BuildConfig.DEBUG) {
+            builder.addInterceptor(ChuckerInterceptor(app.applicationContext))
+        }
+
         return builder.build()
     }
 
