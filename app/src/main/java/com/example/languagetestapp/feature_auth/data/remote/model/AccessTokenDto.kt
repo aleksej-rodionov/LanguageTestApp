@@ -3,16 +3,14 @@ package com.example.languagetestapp.feature_auth.data.remote.model
 import com.example.languagetestapp.feature_auth.domain.model.Token
 import com.google.gson.annotations.SerializedName
 
-data class TokenDto(
+data class AccessTokenDto(
     @SerializedName("accessToken")
     val accessToken: String,
     @SerializedName("accessTokenExp")
-    val accessTokenExp: Long,
-    @SerializedName("refreshToken")
-    val refreshToken: String? = null
+    val accessTokenExp: Long
 ) {
 
     fun toToken(): Token {
-        return Token(accessToken, accessTokenExp, refreshToken)
+        return Token(accessToken, accessTokenExp, null)
     }
 }

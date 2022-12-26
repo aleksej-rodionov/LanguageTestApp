@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun login() {
-        Log.d(TAG_AUTH, "login: CALLED")
+//        Log.d(TAG_AUTH, "login: CALLED")
         val emailResult = validateEmail.execute(state.email)
         val passwordResult = validatePassword.execute(state.password, true)
         val hasError = emailResult.errorMessage != null || passwordResult.errorMessage != null
@@ -65,7 +65,7 @@ class LoginViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            Log.d(TAG_AUTH, "login: EXECUTE")
+//            Log.d(TAG_AUTH, "login: EXECUTE")
             val resp = login.execute(state.email, state.password)
 
             if (resp.data != null) {

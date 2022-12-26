@@ -8,6 +8,7 @@ import com.example.languagetestapp.core.di.ApplicationScope
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
 import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
 import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
+import com.example.languagetestapp.feature_auth.util.countExp
 import com.example.languagetestapp.feature_notes.data.remote.LanguageNoteApi
 import com.example.languagetestapp.feature_notes.data.repo.NoteRepoImpl
 import com.example.languagetestapp.feature_notes.di.NoteModule.AUTHORIZATION
@@ -18,11 +19,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import okhttp3.Authenticator
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Retrofit
@@ -69,31 +66,37 @@ object NoteModule {
         // todo add Authenticator that fires AuthApi.refreshToken method
         builder.authenticator { _, response ->
 
-            // todo how to make it synchronized?
-            appScope.launch {
-                val refreshToken = authStorageGateway.fetchRefreshToken()
-                if (!refreshToken.isNullOrEmpty()) {
-                    // make refreshToken call
-                    val newAccessTokenResponse = authApi.refreshToken(refreshToken)
+            Log.d(TAG_AUTH, "authenticate() is fired")
 
-                    // todo change Responce model to sealed Resource<> in order to use 'when' instead 'if'?
-                    if (newAccessTokenResponse.error.isNullOrEmpty()) {
-                        val newAccessToken = newAccessTokenResponse.body
-                        newAccessToken?.let {
-                            // store new accessToken in shared
-                            authStorageGateway.storeAccessToken(it)
-                            // change accessToken header
-                            response.toRequestWithToken(it)
+            // todo how to make it synchronized?
+            synchronized(this) {
+                appScope.launch {
+                    val refreshToken = authStorageGateway.fetchRefreshToken()
+                    if (!refreshToken.isNullOrEmpty()) {
+                        // make refreshToken call
+                        val newAccessTokenResponse = authApi.refresh(refreshToken)
+                        Log.d(TAG_AUTH, "newTokenResp = $newAccessTokenResponse")
+
+                        // todo change Response model to sealed Resource<> in order to use 'when' instead 'if'?
+                        if (newAccessTokenResponse.error.isNullOrEmpty()) {
+                            val newAccessToken = newAccessTokenResponse.body
+                            Log.d(TAG_AUTH, "newToken = $newAccessToken")
+                            newAccessToken?.let {
+                                // store new accessToken in shared
+                                authStorageGateway.storeAccessToken(it.accessToken)
+                                authStorageGateway.storeAccessTokenExp(it.countExp())
+                                // change accessToken header
+                                response.toRequestWithToken(it.accessToken)
+                            }
+                        } else {
+                            // clear old accessToken anyway (to logout)
+                            authStorageGateway.clearAccessToken()
+                            Log.d(TAG_AUTH, newAccessTokenResponse.error
+                                    ?: "unknown error receiving new accessToken")
                         }
-                    } else {
-                        // clear old accessToken anyway (to logout)
-                        authStorageGateway.clearAccessToken()
-                        Log.d(TAG_AUTH, newAccessTokenResponse.error ?:
-                            "unknown error receiving new accessToken")
                     }
                 }
             }
-
             null
         }
 

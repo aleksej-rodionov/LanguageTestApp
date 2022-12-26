@@ -39,9 +39,12 @@ fun NoteListScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.onAction(NoteListAction.OnCreateNoteClick)
-            }) {
+            FloatingActionButton(
+                modifier = Modifier.padding(32.dp),
+                onClick = {
+                    viewModel.onAction(NoteListAction.OnCreateNoteClick)
+                }
+            ) {
 
             }
         }

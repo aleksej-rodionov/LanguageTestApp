@@ -26,12 +26,22 @@ class AuthStorageGatewayImpl(
         return prefs.getLong(ACCESS_TOKEN_EXP_KEY, 0L)
     }
 
-    override fun storeRefreshToken(refreshToken: String) {
-        prefs.edit().putString(REFRESH_TOKEN_KEY, refreshToken).apply()
+    override fun clearAccessTokenExp() {
+        prefs.edit().remove(ACCESS_TOKEN_EXP_KEY).apply()
+    }
+
+    override fun storeRefreshToken(refreshToken: String?) {
+        refreshToken?.let {
+            prefs.edit().putString(REFRESH_TOKEN_KEY, it).apply()
+        }
     }
 
     override fun fetchRefreshToken(): String? {
         return prefs.getString(REFRESH_TOKEN_KEY, null)
+    }
+
+    override fun clearRefreshToken() {
+        prefs.edit().remove(REFRESH_TOKEN_KEY).apply()
     }
 }
 

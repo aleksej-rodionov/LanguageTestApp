@@ -1,0 +1,11 @@
+
+
+
+
+
+
+
+
+- how to handle the situation if you get in that gap when the accessToken is expired on backEnd,
+but its expiration timestamp in sharedPref is not reached yet (because of that milliseconds
+the getAccessToken() network call has taken)?
