@@ -6,6 +6,8 @@ interface AuthStorageGateway {
 
     fun fetchAccessToken(): String?
 
+    fun clearAccessToken()
+
     fun storeAccessTokenExp(exp: Long)
 
     fun fetchAccessTokenExp(): Long?

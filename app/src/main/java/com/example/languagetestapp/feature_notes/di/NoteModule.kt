@@ -4,9 +4,14 @@ import android.app.Application
 import android.util.Log
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.languagetestapp.BuildConfig
+import com.example.languagetestapp.core.di.ApplicationScope
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
+import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
+import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 import com.example.languagetestapp.feature_notes.data.remote.LanguageNoteApi
 import com.example.languagetestapp.feature_notes.data.repo.NoteRepoImpl
+import com.example.languagetestapp.feature_notes.di.NoteModule.AUTHORIZATION
+import com.example.languagetestapp.feature_notes.di.NoteModule.BEARER
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
 import dagger.Module
 import dagger.Provides
@@ -14,6 +19,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.Authenticator
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -33,7 +41,9 @@ object NoteModule {
     @Note
     fun provideOkHttpClientNote(
         app: Application,
-        authStorageGateway: AuthStorageGateway
+        authStorageGateway: AuthStorageGateway,
+        authApi: LanguageAuthApi,
+        @ApplicationScope appScope: CoroutineScope
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
 
@@ -56,7 +66,36 @@ object NoteModule {
             builder.addInterceptor(ChuckerInterceptor(app.applicationContext))
         }
 
-        // todo refresh token?
+        // todo add Authenticator that fires AuthApi.refreshToken method
+        builder.authenticator { _, response ->
+
+            // todo how to make it synchronized?
+            appScope.launch {
+                val refreshToken = authStorageGateway.fetchRefreshToken()
+                if (!refreshToken.isNullOrEmpty()) {
+                    // make refreshToken call
+                    val newAccessTokenResponse = authApi.refreshToken(refreshToken)
+
+                    // todo change Responce model to sealed Resource<> in order to use 'when' instead 'if'?
+                    if (newAccessTokenResponse.error.isNullOrEmpty()) {
+                        val newAccessToken = newAccessTokenResponse.body
+                        newAccessToken?.let {
+                            // store new accessToken in shared
+                            authStorageGateway.storeAccessToken(it)
+                            // change accessToken header
+                            response.toRequestWithToken(it)
+                        }
+                    } else {
+                        // clear old accessToken anyway (to logout)
+                        authStorageGateway.clearAccessToken()
+                        Log.d(TAG_AUTH, newAccessTokenResponse.error ?:
+                            "unknown error receiving new accessToken")
+                    }
+                }
+            }
+
+            null
+        }
 
         return builder.build()
     }
@@ -95,3 +134,12 @@ object NoteModule {
     const val AUTHORIZATION = "Authorization"
     const val BEARER = "Bearer "
 }
+
+
+
+//====================EXTENSIONS====================
+fun Response.toRequestWithToken(token: String) =
+    this.request.newBuilder()
+        .removeHeader(AUTHORIZATION)
+        .addHeader(AUTHORIZATION, BEARER + token)
+        .build()

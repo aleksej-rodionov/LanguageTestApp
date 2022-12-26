@@ -14,6 +14,10 @@ class AuthStorageGatewayImpl(
         return prefs.getString(ACCESS_TOKEN_KEY, null)
     }
 
+    override fun clearAccessToken() {
+        prefs.edit().remove(ACCESS_TOKEN_KEY).apply()
+    }
+
     override fun storeAccessTokenExp(exp: Long) {
         prefs.edit().putLong(ACCESS_TOKEN_EXP_KEY, exp).apply()
     }
