@@ -30,48 +30,6 @@ class NoteListViewModel @Inject constructor(
     private val _uiEvent = Channel<NoteListUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    init {
-        fetchNotes()
-    }
-
-    private fun fetchNotes() = viewModelScope.launch {
-        state = state.copy(isLoading = true)
-
-        try {
-            val result = noteRepo.getNotes()
-            when (result) {
-                is Resource.Success -> {
-                    state = state.copy(
-                        notes = result.data ?: emptyList(),
-                        isLoading = false
-                    )
-                }
-                is Resource.Error -> {
-                    state = state.copy(
-                        notes = result.data ?: emptyList(),
-                        isLoading = false
-                    )
-                    _uiEvent.send(NoteListUiEvent.SnackbarMsg(result.message ?: "Unknown error"))
-                }
-                is Resource.Loading -> { // never happens since is never sent from NoteRepo
-                    state = state.copy(
-                        notes = result.data ?: emptyList(),
-                        isLoading = true
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            viewModelScope.launch {
-                _uiEvent.send(
-                    NoteListUiEvent.SnackbarMsg(
-                        e.message ?: "unknown error fetching notes"
-                    )
-                )
-            }
-        }
-
-    }
-
     fun onAction(action: NoteListAction) {
         when (action) {
             is NoteListAction.OnCreateNoteClick -> {
@@ -97,6 +55,48 @@ class NoteListViewModel @Inject constructor(
                 // todo
             }
         }
+    }
+
+    init {
+        fetchNotes()
+    }
+
+    private fun fetchNotes() = viewModelScope.launch {
+        state = state.copy(isLoading = true)
+
+        try {
+            when (val result = noteRepo.getNotes()) {
+                is Resource.Success -> {
+                    state = state.copy(
+                        notes = result.data ?: emptyList(),
+                        isLoading = false
+                    )
+                }
+                is Resource.Error -> {
+                    state = state.copy(
+                        notes = result.data ?: emptyList(),
+                        isLoading = false
+                    )
+                    _uiEvent.send(NoteListUiEvent.SnackbarMsg(result.message ?: "Unknown error"))
+                }
+                is Resource.Loading -> { // todo never happens since is never sent from NoteRepo
+                    state = state.copy(
+                        notes = result.data ?: emptyList(),
+                        isLoading = true
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            state = state.copy(isLoading = false)
+            viewModelScope.launch {
+                _uiEvent.send(
+                    NoteListUiEvent.SnackbarMsg(
+                        e.message ?: "Unknown error on ViewModel layer"
+                    )
+                )
+            }
+        }
+
     }
 }
 

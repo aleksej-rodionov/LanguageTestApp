@@ -7,9 +7,13 @@ import com.example.languagetestapp.feature_notes.domain.model.Note
 
 interface NoteRepo {
 
-    suspend fun createNote(note: NoteDto): NoteResponse<NoteDto>
-
     suspend fun getNotes(): Resource<List<Note>>
 
-    suspend fun getNoteById(noteId: String): NoteResponse<NoteDto>
+    suspend fun createNote(text: String): Resource<Note>
+
+    suspend fun getNoteById(noteId: String): Resource<Note>
+
+    suspend fun updateNote(noteId: String, newNote: Note): Resource<Note>
+
+    suspend fun deleteNote(noteId: String): Resource<String>
 }

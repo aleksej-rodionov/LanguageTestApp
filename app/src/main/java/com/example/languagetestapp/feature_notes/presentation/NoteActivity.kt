@@ -38,9 +38,10 @@ class NoteActivity : ComponentActivity() {
                         composable(
                             route = NoteDest.NoteDetailsDest.route
                         ) {
-                            NoteDetailsScreen()
+                            NoteDetailsScreen(
+                                onPopBackStack = { navController.popBackStack() }
+                            )
                         }
-
                     })
             }
         }
