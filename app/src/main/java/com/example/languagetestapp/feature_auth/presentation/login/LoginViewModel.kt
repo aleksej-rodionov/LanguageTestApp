@@ -43,6 +43,9 @@ class LoginViewModel @Inject constructor(
             is LoginAction.Submit -> {
                 login()
             }
+            is LoginAction.PasswordVisibilityChanged -> {
+                state = state.copy(passwordVisible = action.nowVisible)
+            }
         }
     }
 
@@ -65,15 +68,15 @@ class LoginViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-//            Log.d(TAG_AUTH, "login: EXECUTE")
+            state = state.copy(isLoading = true)
             val resp = login.execute(state.email, state.password)
 
             if (resp.data != null) {
                 _uiEvent.send(LoginUiEvent.ToNoteActivity)
-
+                state = state.copy(isLoading = false)
             } else {
-                Log.d(TAG_AUTH, "login response: ${resp.message ?: "Xuj znajet"}")
-                // todo show snackbar with the Error Message
+                _uiEvent.send(LoginUiEvent.SnackbarMsg(resp.message ?: "No token data found in ViewModel layer"))
+                state = state.copy(isLoading = false)
             }
         }
     }
@@ -83,7 +86,9 @@ data class LoginState(
     val email: String = "",
     val emailError: String? = null,
     val password: String = "",
-    val passwordError: String? = null
+    val passwordError: String? = null,
+    val isLoading: Boolean = false,
+    val passwordVisible: Boolean = false
 )
 
 sealed class LoginAction() {
@@ -91,6 +96,7 @@ sealed class LoginAction() {
     data class PasswordChanged(val password: String): LoginAction()
     object NotRegisteredYetClick: LoginAction()
     object Submit: LoginAction()
+    data class PasswordVisibilityChanged(val nowVisible: Boolean): LoginAction()
 }
 
 sealed class LoginUiEvent() {

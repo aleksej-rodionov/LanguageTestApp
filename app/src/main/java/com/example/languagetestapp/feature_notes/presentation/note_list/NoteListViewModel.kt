@@ -77,21 +77,14 @@ class NoteListViewModel @Inject constructor(
             is NoteListAction.OnCreateNoteClick -> {
                 // todo create note logic
 
-                // todo remove then (it's just for testing)
-//                try {
-                    fetchNotes()
-//                } catch (e: Exception) {
-//                    viewModelScope.launch {
-//                        _uiEvent.send(NoteListUiEvent.SnackbarMsg(
-//                                e.message ?: "unknown error frtching notes"))
-//                    }
-//                }
-
-//                viewModelScope.launch {
-//                    authRepo.refreshToken()
-//                    delay(1000L)
+                // todo remove all code below then (it's just for testing)
 //                    fetchNotes()
-//                }
+
+                viewModelScope.launch {
+                    authRepo.refreshToken()
+                    delay(1000L)
+                    fetchNotes()
+                }
 
             }
             is NoteListAction.OnNoteClick -> {

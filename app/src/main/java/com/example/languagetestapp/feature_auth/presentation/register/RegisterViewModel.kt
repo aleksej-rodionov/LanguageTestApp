@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.feature_auth.domain.use_case.*
+import com.example.languagetestapp.feature_auth.presentation.login.LoginUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -18,7 +19,8 @@ class RegisterViewModel @Inject constructor(
     private val validatePassword: ValidatePassword,
     private val validateRepeatedPassword: ValidateRepeatedPassword,
     private val validateTerms: ValidateTerms,
-    private val register: Register
+    private val register: Register,
+    private val login: Login
 ): ViewModel() {
 
     var state by mutableStateOf(RegisterState())
@@ -42,6 +44,12 @@ class RegisterViewModel @Inject constructor(
             }
             is RegisterAction.Submit -> {
                 submitData()
+            }
+            is RegisterAction.PasswordVisibilityChanged -> {
+                state = state.copy(passwordVisible = action.nowVisible)
+            }
+            is RegisterAction.RepeatedPasswordVisibilityChanged -> {
+                state = state.copy(repeatedPasswordVisible = action.nowVisible)
             }
         }
     }
@@ -71,8 +79,31 @@ class RegisterViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val registeredUser = register.execute(state.email, state.password)
-            // todo onSuccess _uiEvent.send(RegisterFormUiEvent.ValidationSuccess)
+            state = state.copy(isLoading = true)
+            val resp = register.execute(state.email, state.password)
+            resp.data?.let {
+                state = state.copy(isLoading = false)
+                state = state.copy(successfullyRegitered = true)
+                loginWithCredentialsJustRegistered(it.email, it.password)
+            } ?: run {
+                _uiEvent.send(RegisterUiEvent.SnackbarMsg(resp.message ?: "No token data found in ViewModel layer"))
+                state = state.copy(isLoading = false)
+            }
+        }
+    }
+
+    private fun loginWithCredentialsJustRegistered(email: String?, password: String?) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+            val resp = login.execute(state.email, state.password)
+
+            if (resp.data != null) {
+                _uiEvent.send(RegisterUiEvent.ToNoteActivity)
+                state = state.copy(isLoading = false)
+            } else {
+                _uiEvent.send(RegisterUiEvent.SnackbarMsg(resp.message ?: "No token data found in ViewModel layer"))
+                state = state.copy(isLoading = false)
+            }
         }
     }
 }
@@ -85,7 +116,11 @@ data class RegisterState(
     val repeatedPassword: String = "",
     val repeatedPasswordError: String? = null,
     val termsAccepted: Boolean = false,
-    val termsError: String? = null
+    val termsError: String? = null,
+    val isLoading: Boolean = false,
+    val successfullyRegitered: Boolean = false,
+    val passwordVisible: Boolean = false,
+    val repeatedPasswordVisible: Boolean = false
 )
 
 sealed class RegisterAction() {
@@ -93,12 +128,12 @@ sealed class RegisterAction() {
     data class PasswordChanged(val password: String): RegisterAction()
     data class RepeatedPasswordChanged(val repeatedPassword: String): RegisterAction()
     data class AcceptTerms(val accepted: Boolean): RegisterAction()
-
+    data class PasswordVisibilityChanged(val nowVisible: Boolean): RegisterAction()
+    data class RepeatedPasswordVisibilityChanged(val nowVisible: Boolean): RegisterAction()
     object Submit: RegisterAction()
 }
 
 sealed class RegisterUiEvent() {
-    object ValidationSuccess: RegisterUiEvent()
-//    object PopBackStack: RegisterFormUiEvent()
-//    data class Navigate(val route: String): RegisterFormUiEvent()
+    data class SnackbarMsg(val msg: String): RegisterUiEvent()
+    object ToNoteActivity: RegisterUiEvent()
 }
