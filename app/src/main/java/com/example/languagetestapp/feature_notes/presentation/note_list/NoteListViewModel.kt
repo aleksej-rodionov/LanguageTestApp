@@ -1,6 +1,5 @@
 package com.example.languagetestapp.feature_notes.presentation.note_list
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,11 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
-import com.example.languagetestapp.feature_auth.presentation.login.LoginState
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
+import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -33,20 +31,23 @@ class NoteListViewModel @Inject constructor(
     fun onAction(action: NoteListAction) {
         when (action) {
             is NoteListAction.OnCreateNoteClick -> {
-                // todo create note logic
-
-                // todo remove all code below then (it's just for testing)
-//                    fetchNotes()
-
                 viewModelScope.launch {
-                    authRepo.refreshToken()
-                    delay(1000L)
-                    fetchNotes()
+                    _uiEvent.send(NoteListUiEvent.Navigate(NoteDest.NoteDetailsDest.route))
                 }
 
+// the code below is just for testing
+//                viewModelScope.launch {
+//                    authRepo.refreshToken()
+//                    delay(1000L)
+//                    fetchNotes()
+//                }
             }
             is NoteListAction.OnNoteClick -> {
-                // todo
+                viewModelScope.launch {
+                    _uiEvent.send(
+                        NoteListUiEvent.Navigate(
+                            NoteDest.NoteDetailsDest.route + "?noteId=${action.note._id}"))
+                }
             }
             is NoteListAction.OnDeleteNoteClick -> {
                 // todo
@@ -96,7 +97,6 @@ class NoteListViewModel @Inject constructor(
                 )
             }
         }
-
     }
 }
 

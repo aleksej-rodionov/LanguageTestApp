@@ -2,8 +2,12 @@ package com.example.languagetestapp.feature_notes.presentation.note_details
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -35,7 +39,19 @@ fun NoteDetailsScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.padding(32.dp),
+                onClick = {
+                viewModel.onAction(NoteDetailsAction.OnClickSave)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Add"
+                )
+            }
+        }
     ) { pv ->
 
         Box(
@@ -53,7 +69,7 @@ fun NoteDetailsScreen(
                 singleLine = false,
                 modifier = Modifier
                     .padding(32.dp)
-                    .fillMaxSize()
+                    .fillMaxWidth()
             )
 
             if (state.isLoading) {

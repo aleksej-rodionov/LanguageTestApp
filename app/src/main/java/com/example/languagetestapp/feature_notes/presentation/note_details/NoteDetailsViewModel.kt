@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteDetailsViewModel @Inject constructor(
     private val noteRepo: NoteRepo,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     var noteId: String? = null

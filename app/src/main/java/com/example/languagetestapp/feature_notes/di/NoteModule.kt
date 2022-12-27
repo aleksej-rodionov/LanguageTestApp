@@ -63,12 +63,9 @@ object NoteModule {
             builder.addInterceptor(ChuckerInterceptor(app.applicationContext))
         }
 
-        // todo add Authenticator that fires AuthApi.refreshToken method
         builder.authenticator { _, response ->
-
             Log.d(TAG_AUTH, "authenticate() is fired")
 
-            // todo how to make it synchronized?
             synchronized(this) {
                 appScope.launch {
                     val refreshToken = authStorageGateway.fetchRefreshToken()
@@ -122,8 +119,8 @@ object NoteModule {
 
     @Provides
     @Singleton
-    fun provideNoteRepo(noteApi: LanguageNoteApi): NoteRepo {
-        return NoteRepoImpl(noteApi)
+    fun provideNoteRepo(noteApi: LanguageNoteApi, authStorageGateway: AuthStorageGateway): NoteRepo {
+        return NoteRepoImpl(noteApi, authStorageGateway)
     }
 
 
