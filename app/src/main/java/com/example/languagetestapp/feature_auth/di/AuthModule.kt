@@ -127,7 +127,7 @@ object AuthModule {
 
 
 
-    const val AUTH_URL = "http://192.168.16.103:4000/"
+    const val AUTH_URL = "http://192.168.16.104:4000/"
     const val AUTH_URL_MACHINE = "http://10.0.2.2:4000/"
     const val AUTH_URL_BRANCH = "http://192.168.1.239:4000/"
 }

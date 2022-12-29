@@ -1,5 +1,6 @@
 package com.example.languagetestapp.feature_notes.data.repo
 
+import android.util.Log
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
 import com.example.languagetestapp.feature_notes.data.remote.model.NoteDto
@@ -9,6 +10,7 @@ import com.example.languagetestapp.feature_notes.data.remote.model.NewNoteDto
 import com.example.languagetestapp.feature_notes.domain.model.NewNote
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
+import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
 
 class NoteRepoImpl(
     private val noteApi: LanguageNoteApi,
@@ -36,6 +38,7 @@ class NoteRepoImpl(
 
     override suspend fun createNote(text: String): Resource<Note> {
         val email = authStorageGateway.fetchCurrentUserData()?.email
+        Log.d(TAG_NOTE, "email from storage = ${email ?: "NULL"}")
         if (email.isNullOrBlank()) return Resource.Error("You are not logged in")
         val newNote = NewNote(
             email = email,
@@ -83,11 +86,12 @@ class NoteRepoImpl(
         }
     }
 
-    override suspend fun deleteNote(noteId: String): Resource<String> {
+    override suspend fun deleteNote(noteId: String): Resource<Note> {
         val response = noteApi.deleteNote(noteId)
         if (response.status == "ok") {
-            response.body?.let {
-                return Resource.Success(it)
+            response.body?.let { dto ->
+                val noteDeleted = dto.toNote()
+                return Resource.Success(noteDeleted)
             } ?: run {
                 return Resource.Error("Success but body is null")
             }

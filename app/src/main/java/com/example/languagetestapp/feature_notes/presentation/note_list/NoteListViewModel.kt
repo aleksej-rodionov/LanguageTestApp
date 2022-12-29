@@ -9,10 +9,10 @@ import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
+import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteListViewModel @Inject constructor(
     private val noteRepo: NoteRepo,
+    private val noteEventRepo: NoteEventRepo,
     private val authRepo: AuthRepo
 ): ViewModel() {
 
@@ -34,13 +35,6 @@ class NoteListViewModel @Inject constructor(
                 viewModelScope.launch {
                     _uiEvent.send(NoteListUiEvent.Navigate(NoteDest.NoteDetailsDest.route))
                 }
-
-// the code below is just for testing
-//                viewModelScope.launch {
-//                    authRepo.refreshToken()
-//                    delay(1000L)
-//                    fetchNotes()
-//                }
             }
             is NoteListAction.OnNoteClick -> {
                 viewModelScope.launch {
@@ -60,6 +54,48 @@ class NoteListViewModel @Inject constructor(
 
     init {
         fetchNotes()
+        subscribeToNoteEvents()
+    }
+
+    private fun subscribeToNoteEvents() {
+        viewModelScope.launch {
+            noteEventRepo.noteCreated.collect {
+                state = state.copy(notes = listWithNewNote(it))
+            }
+        }
+
+        viewModelScope.launch {
+            noteEventRepo.noteUpdated.collect {
+                state = state.copy(notes = listWithNoteChanges(it))
+            }
+        }
+
+        viewModelScope.launch {
+            noteEventRepo.noteDeleted.collect {
+                state = state.copy(notes = listWithoutDeletedNote(it))
+            }
+        }
+    }
+
+    private fun listWithNewNote(note: Note): List<Note> {
+        val list = mutableListOf<Note>()
+        list.addAll(state.notes)
+        list.add(note)
+        return list
+    }
+
+    private fun listWithNoteChanges(note: Note): List<Note> {
+        val list = state.notes.map {
+            if (it._id == note._id) note else it
+        }
+        return list
+    }
+
+    private fun listWithoutDeletedNote(note: Note): List<Note> {
+        val list = state.notes.filter {
+            it._id != note._id
+        }
+        return list
     }
 
     private fun fetchNotes() = viewModelScope.launch {

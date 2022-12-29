@@ -48,7 +48,7 @@ class AuthStorageGatewayImpl(
 
 
     //====================STORING CURRENT USER DATA====================
-    override fun storeCurrentUserData(user: User) {
+    override fun storeCurrentUserData(user: User) { // todo stored with _id = null. Fix it?
         val userStringified = Gson().toJson(user, User::class.java)
         prefs.edit().putString(STRINGIFIED_USER_KEY, userStringified).apply()
     }

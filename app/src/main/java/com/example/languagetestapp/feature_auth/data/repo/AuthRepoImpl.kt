@@ -24,7 +24,6 @@ class AuthRepoImpl(
         if (response.status == "ok") {
             response.body?.let {
                 val user = it.toUser()
-                authStorageGateway.storeCurrentUserData(user)
                 return Resource.Success(user)
             } ?: run {
                 return Resource.Error("Success, but user data not found")
@@ -41,6 +40,8 @@ class AuthRepoImpl(
         if (response.status == "ok") {
             response.body?.let {
                 storeAllTokenData(it)
+                val user = User(email = email, password = password, _id = null)
+                authStorageGateway.storeCurrentUserData(user)
                 return Resource.Success(response.body.toToken())
             } ?: run {
                 return Resource.Error("Response is successful, but token not found")

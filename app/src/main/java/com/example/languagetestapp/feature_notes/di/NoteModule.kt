@@ -11,9 +11,11 @@ import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 import com.example.languagetestapp.feature_auth.util.countExp
 import com.example.languagetestapp.feature_notes.data.remote.LanguageNoteApi
 import com.example.languagetestapp.feature_notes.data.repo.NoteRepoImpl
+import com.example.languagetestapp.feature_notes.data.repo.NoteEventRepoImpl
 import com.example.languagetestapp.feature_notes.di.NoteModule.AUTHORIZATION
 import com.example.languagetestapp.feature_notes.di.NoteModule.BEARER
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
+import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,7 +26,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Qualifier
 import javax.inject.Singleton
 
 private const val TAG_NOTE_MODULE = "NoteModule"
@@ -123,11 +124,17 @@ object NoteModule {
         return NoteRepoImpl(noteApi, authStorageGateway)
     }
 
+    @Provides
+    @Singleton
+    fun provideStatefulNoteRepo(@ApplicationScope appScope: CoroutineScope): NoteEventRepo {
+        return NoteEventRepoImpl(appScope)
+    }
 
 
 
 
-    const val BASE_URL = "http://192.168.16.103:3000/"
+
+    const val BASE_URL = "http://192.168.16.104:3000/"
     const val BASE_URL_MACHINE = "http://10.0.2.2:3000/"
     const val BASE_URL_BRANCH = "http://192.168.1.239:3000/"
 

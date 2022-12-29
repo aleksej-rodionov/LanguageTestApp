@@ -52,6 +52,7 @@ fun NoteListScreen(
             }
         }
     ) { pv ->
+
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colors.background)
@@ -62,6 +63,7 @@ fun NoteListScreen(
                     .padding(pv)
                     .fillMaxSize()
             ) {
+
                 items(state.notes.size) { index ->
                     val note = state.notes[index]
                     if (index > 0) {

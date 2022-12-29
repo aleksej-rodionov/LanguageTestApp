@@ -20,5 +20,5 @@ interface LanguageNoteApi {
     suspend fun updateNote(@Path("noteid") noteId: String, @Body note: NoteDto): NoteResponse<NoteDto>
 
     @DELETE("/notes/{noteid}")
-    suspend fun deleteNote(@Path("noteid") noteId: String): NoteResponse<String>
+    suspend fun deleteNote(@Path("noteid") noteId: String): NoteResponse<NoteDto>
 }

@@ -14,10 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.languagetestapp.feature_notes.presentation.NoteMetaAction
+import com.example.languagetestapp.feature_notes.presentation.NoteViewModel
 
 @Composable
 fun NoteDetailsScreen(
     onPopBackStack: () -> Unit, // todo navigateBackWIthSnackbarMsg
+    noteViewModel: NoteViewModel,
     viewModel: NoteDetailsViewModel = hiltViewModel()
 ) {
 
@@ -28,7 +31,8 @@ fun NoteDetailsScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is NoteDetailsUiEvent.SnackbarMsg -> {
-                    scaffoldState.snackbarHostState.showSnackbar(event.msg)
+//                    scaffoldState.snackbarHostState.showSnackbar(event.msg)
+                    noteViewModel.onMetaAction(NoteMetaAction.MetaSnackbarMsg(event.msg))
                 }
                 is NoteDetailsUiEvent.PopBackStack -> {
                     onPopBackStack()

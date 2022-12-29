@@ -15,5 +15,5 @@ interface NoteRepo {
 
     suspend fun updateNote(noteId: String, newNote: Note): Resource<Note>
 
-    suspend fun deleteNote(noteId: String): Resource<String>
+    suspend fun deleteNote(noteId: String): Resource<Note>
 }

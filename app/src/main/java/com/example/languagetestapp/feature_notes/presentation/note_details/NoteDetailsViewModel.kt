@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
+import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -18,11 +19,12 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteDetailsViewModel @Inject constructor(
     private val noteRepo: NoteRepo,
+    private val noteEventRepo: NoteEventRepo,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    var noteId: String? = null
-    var noteEdited: Note? = null
+    private var _noteId: String? = null
+    private var _noteEdited: Note? = null
 
     var state by mutableStateOf(NoteDetailsState())
 
@@ -41,14 +43,25 @@ class NoteDetailsViewModel @Inject constructor(
                         return@launch
                     }
 
-                    if (noteId == null) {
+                    if (_noteId == null) {
                         try {
                             when (val resp = noteRepo.createNote(state.text)) {
                                 is Resource.Success -> {
                                     state = state.copy(isLoading = false)
+                                    noteEventRepo.onNoteCreated(resp.data)
+                                    viewModelScope.launch {
+                                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                                            "Note successfully created"
+                                        ))
+                                    }
                                 }
                                 is Resource.Error -> {
                                     state = state.copy(isLoading = false)
+                                    viewModelScope.launch {
+                                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                                            resp.message ?: "Unknown error on ViewModel layer"
+                                        ))
+                                    }
                                 }
                                 is Resource.Loading -> { // todo remove this subclass
                                     state = state.copy(isLoading = true)
@@ -65,9 +78,15 @@ class NoteDetailsViewModel @Inject constructor(
 
                     } else {
                         try {
-                            when (val resp = noteRepo.updateNote(noteId!!, noteEdited!!)) {
+                            when (val resp = noteRepo.updateNote(_noteId!!, _noteEdited!!)) {
                                 is Resource.Success -> {
                                     state = state.copy(isLoading = false)
+                                    noteEventRepo.onNoteUpdated(resp.data)
+                                    viewModelScope.launch {
+                                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                                            "Note successfully updated"
+                                        ))
+                                    }
                                 }
                                 is Resource.Error -> {
                                     state = state.copy(isLoading = false)
@@ -93,8 +112,8 @@ class NoteDetailsViewModel @Inject constructor(
     }
 
     init {
-        noteId = savedStateHandle.get<String>("noteId")
-        noteId?.let { id ->
+        _noteId = savedStateHandle.get<String>("noteId")
+        _noteId?.let { id ->
             getNoteById(id)
         }
     }
@@ -109,7 +128,7 @@ class NoteDetailsViewModel @Inject constructor(
                         text = result.data?.text ?: "",
                         isLoading = false
                     )
-                    noteEdited = result.data
+                    _noteEdited = result.data
                 }
                 is Resource.Error -> {
                     state = state.copy(
