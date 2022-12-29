@@ -43,8 +43,7 @@ fun NoteItem(
                 )
                 Spacer(modifier = Modifier.padding(8.dp))
                 IconButton(onClick = {
-//                    onAction(NoteListAction.OnDeleteNoteClick(note))
-                    // empty
+                    onAction(NoteListAction.OnDeleteNoteClick(note))
                 }) {
                     Icon(
                         imageVector = Icons.Default.Delete,

@@ -7,13 +7,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NoteListScreen(
     onNavigate: (NoteListUiEvent.Navigate) -> Unit,
@@ -21,6 +26,11 @@ fun NoteListScreen(
 ) {
 
     val state = viewModel.state
+    val pullRefreshState = rememberPullRefreshState(
+        state.isRefreshing,
+        { viewModel.onPullRefresh() }
+    )
+
     val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(key1 = true, block = {
@@ -56,6 +66,7 @@ fun NoteListScreen(
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colors.background)
+                .pullRefresh(pullRefreshState)
         ) {
 
             LazyColumn(
@@ -88,6 +99,12 @@ fun NoteListScreen(
             if (state.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+
+            PullRefreshIndicator(
+                state.isRefreshing,
+                pullRefreshState,
+                Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }

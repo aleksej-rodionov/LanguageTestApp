@@ -35,13 +35,15 @@ class AuthRepoImpl(
 
     override suspend fun login(email: String, password: String): Resource<Token> {
         val response = authApi.login(email, password)
-//        Log.d(TAG_AUTH, "login: $response")
 
         if (response.status == "ok") {
             response.body?.let {
                 storeAllTokenData(it)
+
+                // todo get user data from backend instead of code below
                 val user = User(email = email, password = password, _id = null)
                 authStorageGateway.storeCurrentUserData(user)
+
                 return Resource.Success(response.body.toToken())
             } ?: run {
                 return Resource.Error("Response is successful, but token not found")
@@ -96,8 +98,6 @@ class AuthRepoImpl(
     override fun fetchAccessToken(): String? {
         return authStorageGateway.fetchAccessToken()
     }
-
-
 
     //====================PRIVATE METHODS====================
     private fun storeAllTokenData(token: TokenDto) {

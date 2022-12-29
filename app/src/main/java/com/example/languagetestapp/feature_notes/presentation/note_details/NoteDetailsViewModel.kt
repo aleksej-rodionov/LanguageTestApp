@@ -1,5 +1,6 @@
 package com.example.languagetestapp.feature_notes.presentation.note_details
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,6 +11,7 @@ import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
 import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
+import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -44,66 +46,9 @@ class NoteDetailsViewModel @Inject constructor(
                     }
 
                     if (_noteId == null) {
-                        try {
-                            when (val resp = noteRepo.createNote(state.text)) {
-                                is Resource.Success -> {
-                                    state = state.copy(isLoading = false)
-                                    noteEventRepo.onNoteCreated(resp.data)
-                                    viewModelScope.launch {
-                                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
-                                            "Note successfully created"
-                                        ))
-                                    }
-                                }
-                                is Resource.Error -> {
-                                    state = state.copy(isLoading = false)
-                                    viewModelScope.launch {
-                                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
-                                            resp.message ?: "Unknown error on ViewModel layer"
-                                        ))
-                                    }
-                                }
-                                is Resource.Loading -> { // todo remove this subclass
-                                    state = state.copy(isLoading = true)
-                                }
-                            }
-                        } catch (e: Exception) {
-                            state = state.copy(isLoading = false)
-                            viewModelScope.launch {
-                                _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
-                                    e.message ?: "Unknown error on ViewModel layer"
-                                ))
-                            }
-                        }
-
+                        createNote()
                     } else {
-                        try {
-                            when (val resp = noteRepo.updateNote(_noteId!!, _noteEdited!!)) {
-                                is Resource.Success -> {
-                                    state = state.copy(isLoading = false)
-                                    noteEventRepo.onNoteUpdated(resp.data)
-                                    viewModelScope.launch {
-                                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
-                                            "Note successfully updated"
-                                        ))
-                                    }
-                                }
-                                is Resource.Error -> {
-                                    state = state.copy(isLoading = false)
-                                }
-                                is Resource.Loading -> { // todo remove this subclass
-                                    state = state.copy(isLoading = true)
-                                }
-                            }
-                        } catch (e: Exception) {
-                            state = state.copy(isLoading = false)
-                            viewModelScope.launch {
-                                _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
-                                    e.message ?: "Unknown error on ViewModel layer"
-                                ))
-                            }
-                        }
-
+                        updateNote()
                     }
                     _uiEvent.send(NoteDetailsUiEvent.PopBackStack) // todo send with SnackbarMsg
                 }
@@ -146,6 +91,74 @@ class NoteDetailsViewModel @Inject constructor(
         } catch (e: Exception) {
             state = state.copy(isLoading = false)
             _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(e.message ?: "Unknown error on ViewModel layer"))
+        }
+    }
+
+    private fun createNote()  = viewModelScope.launch {
+        try {
+            when (val resp = noteRepo.createNote(state.text)) {
+                is Resource.Success -> {
+                    state = state.copy(isLoading = false)
+                    noteEventRepo.onNoteCreated(resp.data)
+                    viewModelScope.launch { // todo remove scope wrapping?
+                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                            "Note successfully created"
+                        ))
+                    }
+                }
+                is Resource.Error -> {
+                    state = state.copy(isLoading = false)
+                    viewModelScope.launch {
+                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                            resp.message ?: "Unknown error on ViewModel layer"
+                        ))
+                    }
+                }
+                is Resource.Loading -> { // todo remove this subclass
+                    state = state.copy(isLoading = true)
+                }
+            }
+        } catch (e: Exception) {
+            state = state.copy(isLoading = false)
+            viewModelScope.launch {
+                _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                    e.message ?: "Unknown error on ViewModel layer"
+                ))
+            }
+        }
+    }
+
+    private fun updateNote()  = viewModelScope.launch {
+        try {
+            when (val resp = noteRepo.updateNote(
+                _noteId!!,
+                _noteEdited!!.copy(text = state.text))
+            ) {
+                is Resource.Success -> {
+                    Log.d(TAG_NOTE, "updateNote.Success: ${resp.data ?: "NULL"}")
+                    state = state.copy(isLoading = false)
+                    noteEventRepo.onNoteUpdated(resp.data)
+                    viewModelScope.launch {
+                        _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                            "Note successfully updated"
+                        ))
+                    }
+                }
+                is Resource.Error -> {
+                    Log.d(TAG_NOTE, "updateNote.Error: ${resp.data ?: "NULL"}")
+                    state = state.copy(isLoading = false)
+                }
+                is Resource.Loading -> { // todo remove this subclass
+                    state = state.copy(isLoading = true)
+                }
+            }
+        } catch (e: Exception) {
+            state = state.copy(isLoading = false)
+            viewModelScope.launch {
+                _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
+                    e.message ?: "Unknown error on ViewModel layer"
+                ))
+            }
         }
     }
 }

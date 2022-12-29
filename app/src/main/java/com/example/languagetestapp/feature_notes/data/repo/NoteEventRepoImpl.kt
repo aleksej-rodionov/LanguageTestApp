@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class NoteEventRepoImpl (
-    private val appScope: CoroutineScope
+    private val noteScope: CoroutineScope
 ): NoteEventRepo {
 
     private val _noteCreated = MutableSharedFlow<Note>()
@@ -17,7 +17,7 @@ class NoteEventRepoImpl (
 
     override fun onNoteCreated(note: Note?) {
         note?.let {
-            appScope.launch {
+            noteScope.launch {
                 _noteCreated.emit(it)
             }
         }
@@ -29,7 +29,7 @@ class NoteEventRepoImpl (
 
     override fun onNoteUpdated(note: Note?) {
         note?.let {
-            appScope.launch {
+            noteScope.launch {
                 _noteUpdated.emit(it)
             }
         }
@@ -41,7 +41,7 @@ class NoteEventRepoImpl (
 
     override fun onNoteDeleted(note: Note?) {
         note?.let {
-            appScope.launch {
+            noteScope.launch {
                 _noteDeleted.emit(it)
             }
         }
