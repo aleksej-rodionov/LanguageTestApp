@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
@@ -14,7 +15,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -24,14 +24,14 @@ fun NoteTopBar(
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
     onSearchTriggered: () -> Unit,
-    onNavClicked: () -> Unit
+    onOpenDrawerClick: () -> Unit
 ) {
     
     when (state.searchWidgetState) {
         is SearchWidgetState.Closed -> {
             DefaultTopBar(
                 onSearchClick = { onSearchTriggered() },
-                onNavIconClick = { onNavClicked() }
+                onOpenDrawerClick = { onOpenDrawerClick() }
             )
         }
         is SearchWidgetState.Opened -> {
@@ -48,13 +48,13 @@ fun NoteTopBar(
 @Composable
 fun DefaultTopBar(
     onSearchClick: () -> Unit,
-    onNavIconClick: () -> Unit
+    onOpenDrawerClick: () -> Unit
 ) {
 
     TopAppBar(
         navigationIcon = {
             IconButton(onClick = {
-                onNavIconClick()
+                onOpenDrawerClick()
             }) {
                 Icon(
                     imageVector = Icons.Default.Menu,
@@ -133,7 +133,7 @@ fun SearchTopBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = Icons.Default.Close,
                         contentDescription = "Close",
                         tint = Color.White
                     )

@@ -9,8 +9,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,6 +29,7 @@ import com.example.languagetestapp.feature_notes.util.Constants.TAG_SEARCH
 import com.example.languagetestapp.ui.theme.LanguageTestAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NoteActivity : ComponentActivity() {
@@ -32,6 +41,7 @@ class NoteActivity : ComponentActivity() {
                 val state = noteViewModel.state
                 val scaffoldState = rememberScaffoldState()
                 val navController = rememberNavController()
+                val scope = rememberCoroutineScope()
 
                 LaunchedEffect(key1 = true) {
                     noteViewModel.uiEvent.collectLatest { event ->
@@ -63,14 +73,27 @@ class NoteActivity : ComponentActivity() {
                             onSearchTriggered = {
                                 noteViewModel.onAction(NoteActivityAction.SearchWidgetStateChanged(SearchWidgetState.Opened))
                             },
-                            onNavClicked = {
-                                //todo open drawer
+                            onOpenDrawerClick = {
+                                scope.launch {
+                                    // Open the drawer with animation
+                                    // and suspend until it is fully
+                                    // opened or animation has been canceled
+                                    scaffoldState.drawerState.open()
+                                }
                             }
                         )
                     },
+                    drawerGesturesEnabled = true,
                     drawerContent = {
-                        // todo
-                    }
+                        NoteDrawerBody(
+                            email = "email@test.com",
+                            onLogoutCLick = {
+                                // todo logout logic
+                                scope.launch { scaffoldState.drawerState.close() }
+                            }
+                        )
+                    },
+//                    drawerShape = customShape()
                 ) { pv ->
 
                     Box(
@@ -104,6 +127,19 @@ class NoteActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+
+
+    //====================PRIVATE METHODS====================
+    private fun customShape() = object : Shape {
+        override fun createOutline(
+            size: Size,
+            layoutDirection: LayoutDirection,
+            density: Density
+        ): Outline {
+            return Outline.Rectangle(Rect(0f, 0f, 100f /* width */, 131f /* height */))
         }
     }
 }
