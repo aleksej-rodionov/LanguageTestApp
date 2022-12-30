@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.languagetestapp.feature_notes.presentation.NoteMetaAction
+import com.example.languagetestapp.feature_notes.presentation.NoteActivityMetaAction
 import com.example.languagetestapp.feature_notes.presentation.NoteViewModel
 
 @Composable
@@ -32,7 +31,7 @@ fun NoteDetailsScreen(
             when (event) {
                 is NoteDetailsUiEvent.SnackbarMsg -> {
 //                    scaffoldState.snackbarHostState.showSnackbar(event.msg)
-                    noteViewModel.onMetaAction(NoteMetaAction.MetaSnackbarMsg(event.msg))
+                    noteViewModel.onMetaAction(NoteActivityMetaAction.MetaSnackbarMsg(event.msg))
                 }
                 is NoteDetailsUiEvent.PopBackStack -> {
                     onPopBackStack()

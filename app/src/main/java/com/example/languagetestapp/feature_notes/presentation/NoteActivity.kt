@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,13 +27,14 @@ class NoteActivity : ComponentActivity() {
         setContent {
             LanguageTestAppTheme {
                 val noteViewModel: NoteViewModel = hiltViewModel()
+                val state = noteViewModel.state
                 val scaffoldState = rememberScaffoldState()
                 val navController = rememberNavController()
 
                 LaunchedEffect(key1 = true) {
                     noteViewModel.uiEvent.collectLatest { event ->
                         when (event) {
-                            is NoteUiEvent.SnackbarMsg -> {
+                            is NoteActivityUiEvent.SnackbarMsg -> {
                                 scaffoldState.snackbarHostState.showSnackbar(
                                     message = event.msg
                                 )
@@ -45,48 +45,45 @@ class NoteActivity : ComponentActivity() {
 
                 Scaffold(
                     scaffoldState = scaffoldState,
-                    content = { pv ->
+                    topBar = {
+                        DefaultTopBar({}, {})
+                     },
+                    drawerContent = {}
+                ) { pv ->
 
-                        Box(
-                            modifier = Modifier.padding(pv)
-                        ) {
+                    Box(
+                        modifier = Modifier.padding(pv)
+                    ) {
 
-                            NavHost(
-                                navController = navController,
-                                startDestination = NoteDest.NoteListDest.route,
-                                builder = {
+                        NavHost(
+                            navController = navController,
+                            startDestination = NoteDest.NoteListDest.route,
+                            builder = {
 
-                                    composable(
-                                        route = NoteDest.NoteListDest.route
-                                    ) {
-                                        NoteListScreen(
-                                            onNavigate = {
-                                                navController.navigate(it.route)
-                                            }
-                                        )
-                                    }
+                                composable(
+                                    route = NoteDest.NoteListDest.route
+                                ) {
+                                    NoteListScreen(
+                                        onNavigate = {
+                                            navController.navigate(it.route)
+                                        }
+                                    )
+                                }
 
-                                    composable(
-                                        route = NoteDest.NoteDetailsDest.route + "?noteId={noteId}"
-                                    ) {
-                                        NoteDetailsScreen(
-                                            onPopBackStack = { navController.popBackStack() },
-                                            noteViewModel = noteViewModel
-                                        )
-                                    }
-                                })
-                        }
-                    })
+                                composable(
+                                    route = NoteDest.NoteDetailsDest.route + "?noteId={noteId}"
+                                ) {
+                                    NoteDetailsScreen(
+                                        onPopBackStack = { navController.popBackStack() },
+                                        noteViewModel = noteViewModel
+                                    )
+                                }
+                            })
+                    }
+                }
             }
         }
     }
-}
-
-@Composable
-fun NoteNavGraph(
-    viewModel: NoteViewModel
-) {
-
 }
 
 

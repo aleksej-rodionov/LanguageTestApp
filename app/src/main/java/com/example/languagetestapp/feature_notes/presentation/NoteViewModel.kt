@@ -1,5 +1,8 @@
 package com.example.languagetestapp.feature_notes.presentation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,23 +16,46 @@ class NoteViewModel @Inject constructor(
 
 ): ViewModel() {
 
-    private val _uiEvent = Channel<NoteUiEvent>()
+    var state by mutableStateOf(NoteActivityState())
+
+    private val _uiEvent = Channel<NoteActivityUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    fun onMetaAction(action: NoteMetaAction) = viewModelScope.launch {
+    fun onAction(action: NoteActivityAction) = viewModelScope.launch {
         when (action) {
-            is NoteMetaAction.MetaSnackbarMsg -> {
+            is NoteActivityAction.SearchWidgetStateChanged -> {
+                state = state.copy(searchWidgetState = action.state)
+            }
+            is NoteActivityAction.SearchTextChanged -> {
+                state = state.copy(searchText = action.text)
+            }
+        }
+    }
+
+    fun onMetaAction(action: NoteActivityMetaAction) = viewModelScope.launch {
+        when (action) {
+            is NoteActivityMetaAction.MetaSnackbarMsg -> {
                 // todo redirect ALL snackbar messages through this activity ViewModel
-                _uiEvent.send(NoteUiEvent.SnackbarMsg(action.msg))
+                _uiEvent.send(NoteActivityUiEvent.SnackbarMsg(action.msg))
             }
         }
     }
 }
 
-sealed class NoteMetaAction {
-    data class MetaSnackbarMsg(val msg: String): NoteMetaAction()
+data class NoteActivityState(
+    val searchWidgetState: SearchWidgetState = SearchWidgetState.Closed,
+    val searchText: String = ""
+)
+
+sealed class NoteActivityAction {
+    data class SearchWidgetStateChanged(val state: SearchWidgetState): NoteActivityAction()
+    data class SearchTextChanged(val text: String): NoteActivityAction()
 }
 
-sealed class NoteUiEvent {
-    data class SnackbarMsg(val msg: String): NoteUiEvent()
+sealed class NoteActivityMetaAction {
+    data class MetaSnackbarMsg(val msg: String): NoteActivityMetaAction()
+}
+
+sealed class NoteActivityUiEvent {
+    data class SnackbarMsg(val msg: String): NoteActivityUiEvent()
 }

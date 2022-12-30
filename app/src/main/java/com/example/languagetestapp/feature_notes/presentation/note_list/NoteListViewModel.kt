@@ -7,11 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
-import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
 import com.example.languagetestapp.feature_notes.domain.model.Note
-import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
 import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
-import com.example.languagetestapp.feature_notes.presentation.note_details.NoteDetailsUiEvent
+import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
 import dagger.hilt.android.lifecycle.HiltViewModel
