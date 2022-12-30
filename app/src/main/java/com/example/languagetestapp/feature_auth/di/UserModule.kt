@@ -8,10 +8,12 @@ import com.example.languagetestapp.core.di.ApplicationScope
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
 import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
 import com.example.languagetestapp.feature_auth.data.remote.LanguageUserApi
-import com.example.languagetestapp.feature_auth.domain.repo.UserRepo
 import com.example.languagetestapp.feature_auth.util.countExp
 import com.example.languagetestapp.feature_notes.di.toRequestWithToken
+import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -22,6 +24,8 @@ import javax.inject.Singleton
 
 private const val TAG_USER_MODULE = "UserModule"
 
+@Module
+@InstallIn(SingletonComponent::class)
 object UserModule {
 
     @Provides
@@ -101,12 +105,6 @@ object UserModule {
     @Singleton
     fun provideUserApi(@User retrofit: Retrofit): LanguageUserApi {
         return retrofit.create(LanguageUserApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideUserRepo(userApi: LanguageUserApi, authStorageGateway: AuthStorageGateway): UserRepo {
-        return UserRepoImpl(userApi, authStorageGateway)
     }
 
 

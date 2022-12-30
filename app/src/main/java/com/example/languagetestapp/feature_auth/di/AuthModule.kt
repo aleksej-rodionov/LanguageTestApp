@@ -8,6 +8,7 @@ import com.example.languagetestapp.BuildConfig
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
 import com.example.languagetestapp.feature_auth.data.local.AuthStorageGatewayImpl
 import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
+import com.example.languagetestapp.feature_auth.data.remote.LanguageUserApi
 import com.example.languagetestapp.feature_auth.data.repo.AuthRepoImpl
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
 import com.example.languagetestapp.feature_auth.domain.use_case.*
@@ -75,10 +76,10 @@ object AuthModule {
     @Singleton
     fun provideAuthRepo(
         authApi: LanguageAuthApi,
-//        authStorageGateway: AuthStorageGateway
+        userApi: LanguageUserApi,
         authStorageGateway: AuthStorageGateway
     ): AuthRepo {
-        return AuthRepoImpl(authApi, authStorageGateway)
+        return AuthRepoImpl(authApi, userApi, authStorageGateway)
     }
 
 

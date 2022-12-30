@@ -16,4 +16,6 @@ interface AuthRepo {
     suspend fun logout(): Resource<String>
 
     fun fetchAccessToken(): String?
+
+    suspend fun getCurrentUserInfo(): Resource<User>
 }

@@ -23,9 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteListViewModel @Inject constructor(
     private val noteRepo: NoteRepo,
-    private val noteEventRepo: NoteEventRepo,
-    private val authRepo: AuthRepo
-): ViewModel() {
+    private val noteEventRepo: NoteEventRepo
+) : ViewModel() {
 
     var state by mutableStateOf(NoteListState())
 
@@ -43,7 +42,9 @@ class NoteListViewModel @Inject constructor(
                 viewModelScope.launch {
                     _uiEvent.send(
                         NoteListUiEvent.Navigate(
-                            NoteDest.NoteDetailsDest.route + "?noteId=${action.note._id}"))
+                            NoteDest.NoteDetailsDest.route + "?noteId=${action.note._id}"
+                        )
+                    )
                 }
             }
             is NoteListAction.OnDeleteNoteClick -> {
@@ -67,40 +68,21 @@ class NoteListViewModel @Inject constructor(
 
     private fun fetchNotes() = viewModelScope.launch {
         state = state.copy(isLoading = true)
-
-        try {
-            when (val result = noteRepo.getNotes()) {
-                is Resource.Success -> {
-                    state = state.copy(
-                        notes = result.data ?: emptyList(),
-                        isLoading = false
-                    )
-                }
-                is Resource.Error -> {
-                    state = state.copy(
-                        notes = result.data ?: emptyList(),
-                        isLoading = false
-                    )
-                    _uiEvent.send(NoteListUiEvent.SnackbarMsg(result.message ?: "Unknown error"))
-                }
-                is Resource.Loading -> { // todo never happens since is never sent from NoteRepo
-                    state = state.copy(
-                        notes = result.data ?: emptyList(),
-                        isLoading = true
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            state = state.copy(isLoading = false)
-            viewModelScope.launch {
-                _uiEvent.send(
-                    NoteListUiEvent.SnackbarMsg(
-                        e.message ?: "Unknown error on ViewModel layer"
-                    )
+        when (val result = noteRepo.getNotes()) {
+            is Resource.Success -> {
+                state = state.copy(
+                    notes = result.data ?: emptyList(),
+                    isLoading = false
                 )
             }
+            is Resource.Error -> {
+                state = state.copy(
+                    notes = result.data ?: emptyList(),
+                    isLoading = false
+                )
+                _uiEvent.send(NoteListUiEvent.SnackbarMsg(result.message ?: "Unknown error"))
+            }
         }
-
         state = state.copy(isRefreshing = false)
     }
 
@@ -149,30 +131,24 @@ class NoteListViewModel @Inject constructor(
     }
 
     private fun deleteNote(note: Note) = viewModelScope.launch {
-        try {
-            when (val resp = noteRepo.deleteNote(note._id)) {
-                is Resource.Success -> {
-                    noteEventRepo.onNoteDeleted(resp.data)
-                    
-                    // todo add UNDO btn to the snackbar below
-                    _uiEvent.send(NoteListUiEvent.SnackbarMsg(
+        when (val resp = noteRepo.deleteNote(note._id)) {
+            is Resource.Success -> {
+                noteEventRepo.onNoteDeleted(resp.data)
+
+                // todo add UNDO btn to the snackbar below
+                _uiEvent.send(
+                    NoteListUiEvent.SnackbarMsg(
                         "Note successfully deleted"
-                    ))
-                }
-                is Resource.Error -> {
-                    _uiEvent.send(
-                        NoteListUiEvent.SnackbarMsg(
-                        resp.message ?: "Unknown error on ViewModel layer"
-                    ))
-                }
-                is Resource.Loading -> {// todo remove this subclass
-                    state = state.copy(isLoading = true)
-                }
+                    )
+                )
             }
-        } catch (e: Exception) {
-            _uiEvent.send(NoteListUiEvent.SnackbarMsg(
-                e.message ?: "Unknown error on ViewModel layer"
-            ))
+            is Resource.Error -> {
+                _uiEvent.send(
+                    NoteListUiEvent.SnackbarMsg(
+                        resp.message ?: "Unknown error on ViewModel layer"
+                    )
+                )
+            }
         }
     }
 }
@@ -184,13 +160,13 @@ data class NoteListState(
 )
 
 sealed class NoteListAction {
-    object OnCreateNoteClick: NoteListAction()
-    data class OnNoteClick(val note: Note): NoteListAction()
-    data class OnDeleteNoteClick(val note: Note): NoteListAction()
-    data class OnCompletedChanged(val note: Note, val checked: Boolean): NoteListAction()
+    object OnCreateNoteClick : NoteListAction()
+    data class OnNoteClick(val note: Note) : NoteListAction()
+    data class OnDeleteNoteClick(val note: Note) : NoteListAction()
+    data class OnCompletedChanged(val note: Note, val checked: Boolean) : NoteListAction()
 }
 
 sealed class NoteListUiEvent {
-    data class Navigate(val route: String): NoteListUiEvent()
-    data class SnackbarMsg(val msg: String): NoteListUiEvent()
+    data class Navigate(val route: String) : NoteListUiEvent()
+    data class SnackbarMsg(val msg: String) : NoteListUiEvent()
 }
