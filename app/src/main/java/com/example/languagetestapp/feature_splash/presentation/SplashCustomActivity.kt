@@ -1,5 +1,7 @@
 package com.example.languagetestapp.feature_splash.presentation
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.languagetestapp.core.util.startActivity
 import com.example.languagetestapp.feature_auth.presentation.AuthActivity
 import com.example.languagetestapp.feature_notes.presentation.NoteActivity
 import com.example.languagetestapp.ui.theme.Blue
@@ -57,14 +60,10 @@ class SplashCustomActivity : ComponentActivity() {
     }
 
     private fun toNoteActivity() {
-        val intent = Intent(this, NoteActivity::class.java)
-        startActivity(intent)
-        finish()
+        startActivity<NoteActivity>()
     }
 
     private fun toAuthActivity() {
-        val intent = Intent(this, AuthActivity::class.java)
-        startActivity(intent)
-        finish()
+        startActivity<AuthActivity>()
     }
 }
