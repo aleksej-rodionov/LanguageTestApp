@@ -35,7 +35,12 @@ fun NoteTopBar(
             )
         }
         is SearchWidgetState.Opened -> {
-            
+            SearchTopBar(
+                text = state.searchText,
+                onTextChange = onTextChange,
+                onSearchClick = onSearchClick,
+                onCloseClick = onCloseClick
+            )
         }
     }
 }
@@ -51,7 +56,22 @@ fun DefaultTopBar(
             IconButton(onClick = {
                 onNavIconClick()
             }) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "Open drawer")
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Open drawer",
+                    tint = Color.White
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = {
+                onSearchClick()
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Search",
+                    tint = Color.White
+            )
             }
         },
         backgroundColor = MaterialTheme.colors.primary,
@@ -93,7 +113,7 @@ fun SearchTopBar(
             leadingIcon = {
                 IconButton(
                     modifier = Modifier.alpha(ContentAlpha.medium),
-                    onClick = { /*todo*/ }
+                    onClick = { onSearchClick(text) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,

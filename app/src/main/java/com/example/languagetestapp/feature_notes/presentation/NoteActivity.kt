@@ -1,6 +1,7 @@
 package com.example.languagetestapp.feature_notes.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.languagetestapp.feature_notes.presentation.note_details.NoteDetailsScreen
 import com.example.languagetestapp.feature_notes.presentation.note_list.NoteListScreen
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
+import com.example.languagetestapp.feature_notes.util.Constants.TAG_SEARCH
 import com.example.languagetestapp.ui.theme.LanguageTestAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -46,9 +48,29 @@ class NoteActivity : ComponentActivity() {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     topBar = {
-                        DefaultTopBar({}, {})
-                     },
-                    drawerContent = {}
+                        NoteTopBar(
+                            state = state,
+                            onTextChange = {
+                               noteViewModel.onAction(NoteActivityAction.SearchTextChanged(it))
+                            },
+                            onCloseClick = {
+                                noteViewModel.onAction(NoteActivityAction.SearchTextChanged(""))
+                                noteViewModel.onAction(NoteActivityAction.SearchWidgetStateChanged(SearchWidgetState.Closed))
+                            },
+                            onSearchClick = {
+                                Log.d(TAG_SEARCH, "searchText = $it")
+                            },
+                            onSearchTriggered = {
+                                noteViewModel.onAction(NoteActivityAction.SearchWidgetStateChanged(SearchWidgetState.Opened))
+                            },
+                            onNavClicked = {
+                                //todo open drawer
+                            }
+                        )
+                    },
+                    drawerContent = {
+                        // todo
+                    }
                 ) { pv ->
 
                     Box(
