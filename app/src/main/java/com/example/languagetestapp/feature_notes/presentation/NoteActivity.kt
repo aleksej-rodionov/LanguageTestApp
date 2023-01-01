@@ -18,10 +18,11 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.languagetestapp.core.util.startActivity
+import com.example.languagetestapp.feature_auth.presentation.AuthActivity
 import com.example.languagetestapp.feature_notes.presentation.note_details.NoteDetailsScreen
 import com.example.languagetestapp.feature_notes.presentation.note_list.NoteListScreen
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
@@ -50,6 +51,9 @@ class NoteActivity : ComponentActivity() {
                                 scaffoldState.snackbarHostState.showSnackbar(
                                     message = event.msg
                                 )
+                            }
+                            is NoteActivityUiEvent.ToAuthActivity -> {
+                                startActivity<AuthActivity>()
                             }
                         }
                     }
@@ -86,9 +90,9 @@ class NoteActivity : ComponentActivity() {
                     drawerGesturesEnabled = true,
                     drawerContent = {
                         NoteDrawerBody(
-                            email = "email@test.com",
+                            email = state.userEmail,
                             onLogoutCLick = {
-                                // todo logout logic
+                                noteViewModel.onAction(NoteActivityAction.OnLogout)
                                 scope.launch { scaffoldState.drawerState.close() }
                             }
                         )

@@ -8,12 +8,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
+import com.example.languagetestapp.feature_notes.di.NoteScope
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
 import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
 import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +26,7 @@ import javax.inject.Inject
 class NoteDetailsViewModel @Inject constructor(
     private val noteRepo: NoteRepo,
     private val noteEventRepo: NoteEventRepo,
+    @NoteScope private val noteScope: CoroutineScope,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -39,17 +44,19 @@ class NoteDetailsViewModel @Inject constructor(
                 state = state.copy(text = action.text)
             }
             is NoteDetailsAction.OnClickSave -> {
-                viewModelScope.launch {
-                    if (state.text.isBlank()) {
+                if (state.text.isBlank()) {
+                    viewModelScope.launch {
                         _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg("Text can't be empty"))
                         return@launch
                     }
+                }
 
-                    if (_noteId == null) {
-                        createNote()
-                    } else {
-                        updateNote()
-                    }
+                if (_noteId == null) {
+                    createNote()
+                } else {
+                    updateNote()
+                }
+                viewModelScope.launch {
                     _uiEvent.send(NoteDetailsUiEvent.PopBackStack) // todo send with SnackbarMsg
                 }
             }
@@ -82,49 +89,38 @@ class NoteDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun createNote() = viewModelScope.launch {
-        when (val resp = noteRepo.createNote(state.text)) {
+    private fun createNote() = noteScope.launch {
+        val resp = noteRepo.createNote(state.text)
+        Log.d(TAG_NOTE, "createNote: ${resp.message ?: "xz"}")
+        when (resp) {
             is Resource.Success -> {
                 state = state.copy(isLoading = false)
                 noteEventRepo.onNoteCreated(resp.data)
-                viewModelScope.launch { // todo remove scope wrapping?
-                    _uiEvent.send(
-                        NoteDetailsUiEvent.SnackbarMsg(
-                            "Note successfully created"
-                        )
-                    )
-                }
+                _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg("Note successfully created"))
             }
             is Resource.Error -> {
                 state = state.copy(isLoading = false)
-                viewModelScope.launch {
-                    _uiEvent.send(
-                        NoteDetailsUiEvent.SnackbarMsg(
-                            resp.message ?: "Unknown error on ViewModel layer"
-                        )
+                _uiEvent.send(
+                    NoteDetailsUiEvent.SnackbarMsg(
+                        resp.message ?: "Unknown error on ViewModel layer"
                     )
-                }
+                )
             }
         }
     }
 
-    private fun updateNote() = viewModelScope.launch {
-        when (val resp = noteRepo.updateNote(
+    private fun updateNote() = noteScope.launch {
+        val resp = noteRepo.updateNote(
             _noteId!!,
             _noteEdited!!.copy(text = state.text)
         )
-        ) {
+        Log.d(TAG_NOTE, "updateNote: ${resp.message ?: "xz"}")
+        when (resp) {
             is Resource.Success -> {
                 Log.d(TAG_NOTE, "updateNote.Success: ${resp.data ?: "NULL"}")
                 state = state.copy(isLoading = false)
                 noteEventRepo.onNoteUpdated(resp.data)
-                viewModelScope.launch {
-                    _uiEvent.send(
-                        NoteDetailsUiEvent.SnackbarMsg(
-                            "Note successfully updated"
-                        )
-                    )
-                }
+                _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg("Note successfully updated"))
             }
             is Resource.Error -> {
                 Log.d(TAG_NOTE, "updateNote.Error: ${resp.data ?: "NULL"}")

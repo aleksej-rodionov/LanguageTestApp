@@ -21,6 +21,6 @@ interface LanguageAuthApi {
     suspend fun changePassword(@Field("password") newPassword: String): AuthResponse<TokenDto>
 
     @FormUrlEncoded
-    @DELETE("/auth/logout")
+    @POST("/auth/logout")
     suspend fun logout(@Field("refreshtoken") refreshToken: String): AuthResponse<String>
 }

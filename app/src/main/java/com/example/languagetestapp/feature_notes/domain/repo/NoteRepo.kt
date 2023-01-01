@@ -1,6 +1,7 @@
 package com.example.languagetestapp.feature_notes.domain.repo
 
 import com.example.languagetestapp.core.util.Resource
+import com.example.languagetestapp.feature_auth.domain.model.User
 import com.example.languagetestapp.feature_notes.data.remote.model.NoteDto
 import com.example.languagetestapp.feature_notes.data.remote.model.NoteResponse
 import com.example.languagetestapp.feature_notes.domain.model.Note
@@ -16,4 +17,6 @@ interface NoteRepo {
     suspend fun updateNote(noteId: String, newNote: Note): Resource<Note>
 
     suspend fun deleteNote(noteId: String): Resource<Note>
+
+    fun fetchCurrentUserData(): User?
 }

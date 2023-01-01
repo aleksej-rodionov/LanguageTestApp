@@ -86,18 +86,18 @@ class AuthRepoImpl(
     override suspend fun logout(): Resource<String> {
         val refreshTokenStored = authStorageGateway.fetchRefreshToken()
 
-        // clear tokens in authStore
-        authStorageGateway.apply {
-            clearAccessToken()
-            clearAccessTokenExp()
-            clearRefreshToken()
-            clearCurrentUserData()
-        }
-
         // clear token on the backEnd
         try {
             refreshTokenStored?.let {
                 val response = authApi.logout(it)
+
+                // clear tokens in authStore
+                authStorageGateway.apply {
+                    clearAccessToken()
+                    clearAccessTokenExp()
+                    clearRefreshToken()
+                    clearCurrentUserData()
+                }
 
                 if (response.status == "ok") {
                     return Resource.Success(response.body ?: "Success, anyway")
