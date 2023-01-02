@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.feature_auth.domain.use_case.*
-import com.example.languagetestapp.feature_auth.presentation.login.LoginUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -83,7 +82,7 @@ class RegisterViewModel @Inject constructor(
             val resp = register.execute(state.email, state.password)
             resp.data?.let {
                 state = state.copy(isLoading = false)
-                state = state.copy(successfullyRegitered = true)
+                state = state.copy(successfullyRegistered = true)
                 loginWithCredentialsJustRegistered(it.email, it.password)
             } ?: run {
                 _uiEvent.send(RegisterUiEvent.SnackbarMsg(resp.message ?: "No token data found in ViewModel layer"))
@@ -118,7 +117,7 @@ data class RegisterState(
     val termsAccepted: Boolean = false,
     val termsError: String? = null,
     val isLoading: Boolean = false,
-    val successfullyRegitered: Boolean = false,
+    val successfullyRegistered: Boolean = false,
     val passwordVisible: Boolean = false,
     val repeatedPasswordVisible: Boolean = false
 )

@@ -60,6 +60,24 @@ class AuthRepoImpl(
         }
     }
 
+    override suspend fun changePassword(oldPassword: String, newPassword: String): Resource<String> {
+        try {
+            val response = authApi.changePassword(oldPassword, newPassword)
+            if (response.status == "ok") {
+                response.body?.let {
+                    storeNewPassword(it)
+                    return Resource.Success(it)
+                } ?: run {
+                    return Resource.Error("Response is success, but newPassword not found")
+                }
+            } else {
+                return Resource.Error(response.error ?: "Unknown error occurred")
+            }
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unknown exception")
+        }
+    }
+
     override suspend fun refreshToken(): Resource<Token> {
         try {
             val refreshTokenStored = authStorageGateway.fetchRefreshToken()
@@ -146,6 +164,14 @@ class AuthRepoImpl(
         authStorageGateway.storeAccessTokenExp(accessTokenExp)
         val refreshToken = token.refreshToken
         authStorageGateway.storeRefreshToken(refreshToken)
+    }
+
+    private fun storeNewPassword(newPassword: String) {
+        val currentUserData = authStorageGateway.fetchCurrentUserData()
+        currentUserData?.let {
+            val updatedUser = it.copy(password = newPassword)
+            authStorageGateway.storeCurrentUserData(updatedUser)
+        }
     }
 
     private suspend fun getCurrentUserDataAndStoreInPref() {

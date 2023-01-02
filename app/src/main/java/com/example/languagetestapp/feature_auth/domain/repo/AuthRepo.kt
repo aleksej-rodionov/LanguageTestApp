@@ -11,6 +11,8 @@ interface AuthRepo {
 
     suspend fun login(email: String, password: String): Resource<Token>
 
+    suspend fun changePassword(oldPassword: String, newPassword: String): Resource<String>
+
     suspend fun refreshToken(): Resource<Token>
 
     suspend fun logout(): Resource<String>

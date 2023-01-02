@@ -85,18 +85,6 @@ object AuthModule {
 
 
     //====================AUTH USE CASES====================
-/*    @Provides
-    @Singleton
-    fun provideRegisterUseCases(authRepo: AuthRepo): AuthUseCases {
-        return AuthUseCases(
-            register = Register(authRepo),
-            validateEmail = ValidateEmail(),
-            validatePassword = ValidatePassword(),
-            validateRepeatedPassword = ValidateRepeatedPassword(),
-            validateTerms = ValidateTerms()
-        )
-    }*/
-
     @Provides
     @Singleton
     fun provideRegister(authRepo: AuthRepo): Register {
@@ -124,6 +112,12 @@ object AuthModule {
     @Provides
     @Singleton
     fun provideValidateTerms() = ValidateTerms()
+
+    @Provides
+    @Singleton
+    fun provideChangePassword(authRepo: AuthRepo): ChangePassword {
+        return ChangePassword(authRepo)
+    }
     //====================AUTH USE CASES END====================
 
 

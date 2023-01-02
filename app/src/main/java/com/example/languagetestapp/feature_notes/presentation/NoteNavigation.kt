@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.languagetestapp.feature_notes.presentation.change_password.ChangePasswordScreen
 import com.example.languagetestapp.feature_notes.presentation.note_details.NoteDetailsScreen
 import com.example.languagetestapp.feature_notes.presentation.note_list.NoteListScreen
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
@@ -36,6 +37,15 @@ fun NoteNavigation(
                 route = NoteDest.NoteDetailsDest.route + "?noteId={noteId}"
             ) {
                 NoteDetailsScreen(
+                    showSnackbar = showSnackbar,
+                    onPopBackStack = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = NoteDest.ChangePasswordDest.route
+            ) {
+                ChangePasswordScreen(
                     showSnackbar = showSnackbar,
                     onPopBackStack = { navController.popBackStack() }
                 )

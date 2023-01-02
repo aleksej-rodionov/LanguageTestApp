@@ -1,12 +1,10 @@
 package com.example.languagetestapp.feature_auth.presentation.login
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 import com.example.languagetestapp.feature_auth.domain.use_case.Login
 import com.example.languagetestapp.feature_auth.domain.use_case.ValidateEmail
 import com.example.languagetestapp.feature_auth.domain.use_case.ValidatePassword

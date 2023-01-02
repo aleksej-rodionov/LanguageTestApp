@@ -1,6 +1,5 @@
 package com.example.languagetestapp.feature_auth.presentation.register
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,8 +19,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.languagetestapp.feature_auth.presentation.login.LoginAction
-import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 
 @Composable
 fun RegisterScreen(
@@ -188,7 +185,7 @@ fun RegisterScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
             
-            if (state.successfullyRegitered) {
+            if (state.successfullyRegistered) {
                 Image(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Success",

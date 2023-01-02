@@ -17,7 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun NoteDetailsScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
-    onPopBackStack: () -> Unit, // todo navigateBackWIthSnackbarMsg
+    onPopBackStack: () -> Unit,
     viewModel: NoteDetailsViewModel = hiltViewModel()
 ) {
 
