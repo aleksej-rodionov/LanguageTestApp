@@ -13,12 +13,15 @@ interface LanguageNoteApi {
     @POST("/notes")
     suspend fun createNote(@Body note: NewNoteDto): NoteResponse<NoteDto>
 
+    // todo replace with mutable query parameters (instead @Path)
     @GET("/notes/{noteid}")
     suspend fun getNoteById(@Path("noteid") noteId: String): NoteResponse<NoteDto>
 
+    // todo replace with mutable query parameters (instead @Path)
     @PUT("/notes/{noteid}")
     suspend fun updateNote(@Path("noteid") noteId: String, @Body note: NoteDto): NoteResponse<NoteDto>
 
+    // todo replace with mutable query parameters (instead @Path)
     @DELETE("/notes/{noteid}")
     suspend fun deleteNote(@Path("noteid") noteId: String): NoteResponse<NoteDto>
 }
