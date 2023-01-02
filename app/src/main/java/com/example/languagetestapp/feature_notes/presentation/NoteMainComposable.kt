@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import com.example.languagetestapp.feature_notes.util.Constants
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -70,6 +71,9 @@ fun NoteMainComposable(
                 onLogoutCLick = {
                     noteViewModel.onAction(NoteActivityAction.OnLogout)
                     scope.launch { noteMainState.scaffoldState.drawerState.close() }
+                },
+                onChangePasswordClick = {
+                    noteMainState.navController.navigate(NoteDest.ChangePasswordDest.route)
                 }
             )
         }
