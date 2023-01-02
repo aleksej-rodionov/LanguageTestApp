@@ -7,7 +7,7 @@ import retrofit2.http.*
 
 interface LanguageNoteApi {
 
-    @GET("/notes")
+    @GET("/notes/index")
     suspend fun getNotes(): NoteResponse<List<NoteDto>>
 
     @POST("/notes")
@@ -16,6 +16,9 @@ interface LanguageNoteApi {
     // todo replace with mutable query parameters (instead @Path)
     @GET("/notes/{noteid}")
     suspend fun getNoteById(@Path("noteid") noteId: String): NoteResponse<NoteDto>
+
+//    @GET("/notes")
+//    suspend fun getNoteById(@Query("noteid") noteId: String): NoteResponse<NoteDto>
 
     // todo replace with mutable query parameters (instead @Path)
     @PUT("/notes/{noteid}")
