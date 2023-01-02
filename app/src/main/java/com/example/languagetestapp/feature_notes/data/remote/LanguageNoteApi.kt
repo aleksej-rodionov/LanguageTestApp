@@ -14,11 +14,8 @@ interface LanguageNoteApi {
     suspend fun createNote(@Body note: NewNoteDto): NoteResponse<NoteDto>
 
     // todo replace with mutable query parameters (instead @Path)
-    @GET("/notes/{noteid}")
+    @GET("/notes/details/{noteid}")
     suspend fun getNoteById(@Path("noteid") noteId: String): NoteResponse<NoteDto>
-
-//    @GET("/notes")
-//    suspend fun getNoteById(@Query("noteid") noteId: String): NoteResponse<NoteDto>
 
     // todo replace with mutable query parameters (instead @Path)
     @PUT("/notes/{noteid}")
@@ -27,4 +24,7 @@ interface LanguageNoteApi {
     // todo replace with mutable query parameters (instead @Path)
     @DELETE("/notes/{noteid}")
     suspend fun deleteNote(@Path("noteid") noteId: String): NoteResponse<NoteDto>
+
+    @GET("/notes/search")
+    suspend fun searchNotes(@Query("query") query: String): NoteResponse<List<NoteDto>>
 }

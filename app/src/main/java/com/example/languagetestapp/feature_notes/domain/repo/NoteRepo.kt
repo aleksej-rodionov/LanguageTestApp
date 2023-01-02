@@ -18,5 +18,7 @@ interface NoteRepo {
 
     suspend fun deleteNote(noteId: String): Resource<Note>
 
+    suspend fun searchNotes(query: String): Resource<List<Note>>
+
     fun fetchCurrentUserData(): User?
 }

@@ -124,6 +124,27 @@ class NoteRepoImpl(
         }
     }
 
+    override suspend fun searchNotes(query: String): Resource<List<Note>> {
+        try {
+            val response = noteApi.searchNotes(query)
+            if (response.status == "ok") {
+                response.body?.let {
+                    // todo cache data in RoomDb
+                    val notes = it.map { dto ->
+                        dto.toNote()
+                    }
+                    return Resource.Success(notes)
+                } ?: run {
+                    return Resource.Error("Success but body is null")
+                }
+            } else {
+                return Resource.Error(response.error ?: "Unknown error occurred")
+            }
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unknown exception")
+        }
+    }
+
     override fun fetchCurrentUserData(): User? {
         return authStorageGateway.fetchCurrentUserData()
     }
