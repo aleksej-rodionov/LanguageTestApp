@@ -40,15 +40,6 @@ class NoteViewModel @Inject constructor(
         }
     }
 
-    fun onMetaAction(action: NoteActivityMetaAction) = viewModelScope.launch {
-        when (action) {
-            is NoteActivityMetaAction.MetaSnackbarMsg -> {
-                // todo redirect ALL snackbar messages through this activity ViewModel
-                _uiEvent.send(NoteActivityUiEvent.SnackbarMsg(action.msg))
-            }
-        }
-    }
-
     init {
         fetchCurrentUserData()?.email?.let {
             state = state.copy(userEmail = it)
@@ -85,10 +76,6 @@ sealed class NoteActivityAction {
     data class SearchWidgetStateChanged(val state: SearchWidgetState): NoteActivityAction()
     data class SearchTextChanged(val text: String): NoteActivityAction()
     object OnLogout: NoteActivityAction()
-}
-
-sealed class NoteActivityMetaAction {
-    data class MetaSnackbarMsg(val msg: String): NoteActivityMetaAction()
 }
 
 sealed class NoteActivityUiEvent {

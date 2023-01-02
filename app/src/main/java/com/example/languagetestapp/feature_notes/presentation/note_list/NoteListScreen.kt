@@ -21,6 +21,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NoteListScreen(
+    showSnackbar: (String, SnackbarDuration) -> Unit,
     onNavigate: (NoteListUiEvent.Navigate) -> Unit,
     viewModel: NoteListViewModel = hiltViewModel()
 ) {
@@ -40,7 +41,7 @@ fun NoteListScreen(
                     onNavigate(event)
                 }
                 is NoteListUiEvent.SnackbarMsg -> {
-                    scaffoldState.snackbarHostState.showSnackbar(event.msg)
+                    showSnackbar(event.msg, SnackbarDuration.Short)
                 }
             }
         }

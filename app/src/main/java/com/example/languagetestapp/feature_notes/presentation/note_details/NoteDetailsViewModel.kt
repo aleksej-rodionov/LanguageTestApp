@@ -44,20 +44,17 @@ class NoteDetailsViewModel @Inject constructor(
                 state = state.copy(text = action.text)
             }
             is NoteDetailsAction.OnClickSave -> {
-                if (state.text.isBlank()) {
-                    viewModelScope.launch {
+                viewModelScope.launch {
+                    if (state.text.isBlank()) {
                         _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg("Text can't be empty"))
                         return@launch
                     }
-                }
 
-                if (_noteId == null) {
-                    createNote()
-                } else {
-                    updateNote()
-                }
-                viewModelScope.launch {
-                    _uiEvent.send(NoteDetailsUiEvent.PopBackStack) // todo send with SnackbarMsg
+                    if (_noteId == null) {
+                        createNote()
+                    } else {
+                        updateNote()
+                    }
                 }
             }
         }
@@ -97,6 +94,7 @@ class NoteDetailsViewModel @Inject constructor(
                 state = state.copy(isLoading = false)
                 noteEventRepo.onNoteCreated(resp.data)
                 _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg("Note successfully created"))
+                _uiEvent.send(NoteDetailsUiEvent.PopBackStack) // todo send with SnackbarMsg
             }
             is Resource.Error -> {
                 state = state.copy(isLoading = false)
@@ -121,6 +119,7 @@ class NoteDetailsViewModel @Inject constructor(
                 state = state.copy(isLoading = false)
                 noteEventRepo.onNoteUpdated(resp.data)
                 _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg("Note successfully updated"))
+                _uiEvent.send(NoteDetailsUiEvent.PopBackStack) // todo send with SnackbarMsg
             }
             is Resource.Error -> {
                 Log.d(TAG_NOTE, "updateNote.Error: ${resp.data ?: "NULL"}")
