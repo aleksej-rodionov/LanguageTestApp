@@ -4,7 +4,17 @@
 
 
 
+Bugs:
 
+- When click on noteItem/FAB in noteList, it waits for Snackbar to disappear, if any is shown
+    1) try to separate Snackbar event from another uiEvents?
+    2) Snackbar shown in the activity scaffold doesn't affect FAB in childScreen's scaffold
+
+-
+
+
+
+Later on:
 
 - how to handle the situation if you get in that gap when the accessToken is expired on backEnd,
 but its expiration timestamp in sharedPref is not reached yet (because of that milliseconds
