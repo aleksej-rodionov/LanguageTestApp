@@ -8,11 +8,8 @@ Tasks:
 
 Bugs:
 
-- When click on noteItem/FAB in noteList, it waits for Snackbar to disappear, if any is shown
-    1) try to separate Snackbar event from another uiEvents?
-    2) Snackbar shown in the activity scaffold doesn't affect FAB in childScreen's scaffold
-
--
+- launchSingleTop = true when navigate to fragment
+- Snackbar shown in the activity scaffold doesn't affect FAB in childScreen's scaffold
 
 
 

@@ -62,7 +62,7 @@ class AuthRepoImpl(
 
     override suspend fun changePassword(oldPassword: String, newPassword: String): Resource<String> {
         try {
-            val response = authApi.changePassword(oldPassword, newPassword)
+            val response = userApi.changePassword(oldPassword, newPassword)
             if (response.status == "ok") {
                 response.body?.let {
                     storeNewPassword(it)
