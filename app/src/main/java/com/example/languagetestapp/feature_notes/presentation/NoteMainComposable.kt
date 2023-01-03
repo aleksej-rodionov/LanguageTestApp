@@ -36,6 +36,8 @@ fun NoteMainComposable(
         }
     }
 
+    fun searchTextChanged(newText: String): String = newText
+
     Scaffold(
         scaffoldState = noteMainState.scaffoldState,
         topBar = {
@@ -50,6 +52,7 @@ fun NoteMainComposable(
                 },
                 onSearchClick = {
                     Log.d(Constants.TAG_SEARCH, "searchText = $it")
+                    searchTextChanged(it)
                 },
                 onSearchTriggered = {
                     noteViewModel.onAction(NoteActivityAction.SearchWidgetStateChanged(SearchWidgetState.Opened))
@@ -74,6 +77,7 @@ fun NoteMainComposable(
                 },
                 onChangePasswordClick = {
                     noteMainState.navController.navigate(NoteDest.ChangePasswordDest.route)
+                    scope.launch { noteMainState.scaffoldState.drawerState.close() }
                 }
             )
         }
@@ -87,7 +91,8 @@ fun NoteMainComposable(
                 navController = noteMainState.navController,
                 showSnackbar = { msg, dur ->
                     noteMainState.showSnackbar(msg, dur)
-                }
+                },
+                searchTextChanged = { searchTextChanged() }
             )
         }
     }
