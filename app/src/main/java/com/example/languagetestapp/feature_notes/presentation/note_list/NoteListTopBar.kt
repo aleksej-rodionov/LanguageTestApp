@@ -6,7 +6,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -22,16 +21,16 @@ import androidx.compose.ui.unit.dp
 fun NoteListTopBar(
     state: NoteListState,
     onTextChange: (String) -> Unit,
-    onCloseClick: () -> Unit,
-    onSearchClick: (String) -> Unit,
-    onSearchTriggered: () -> Unit,
+    onCloseSearchClick: () -> Unit,
+//    onSubmitSearchQueryClick: (String) -> Unit,
+    onOpenSearchClick: () -> Unit,
     onOpenDrawerClick: () -> Unit
 ) {
     
     when (state.searchWidgetState) {
         is SearchWidgetState.Closed -> {
             SearchFieldClosedBar(
-                onSearchClick = { onSearchTriggered() },
+                onSearchClick = { onOpenSearchClick() },
                 onOpenDrawerClick = { onOpenDrawerClick() }
             )
         }
@@ -39,8 +38,8 @@ fun NoteListTopBar(
             SearchFieldOpenedBar(
                 text = state.searchText,
                 onTextChange = onTextChange,
-                onSearchClick = onSearchClick,
-                onCloseClick = onCloseClick
+//                onSearchClick = onSubmitSearchQueryClick,
+                onCloseClick = onCloseSearchClick
             )
         }
     }
@@ -86,7 +85,7 @@ fun SearchFieldClosedBar(
 fun SearchFieldOpenedBar(
     text: String,
     onTextChange: (String) -> Unit,
-    onSearchClick: (String) -> Unit,
+//    onSearchClick: (String) -> Unit,
     onCloseClick: () -> Unit
 ) {
 
@@ -111,18 +110,18 @@ fun SearchFieldOpenedBar(
             },
             textStyle = TextStyle(fontSize = MaterialTheme.typography.subtitle1.fontSize),
             singleLine = true,
-            leadingIcon = {
-                IconButton(
-                    modifier = Modifier.alpha(ContentAlpha.medium),
-                    onClick = { onSearchClick(text) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = Color.White
-                    )
-                }
-            },
+//            leadingIcon = {
+//                IconButton(
+//                    modifier = Modifier.alpha(ContentAlpha.medium),
+//                    onClick = { onSearchClick(text) }
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Search,
+//                        contentDescription = "Search",
+//                        tint = Color.White
+//                    )
+//                }
+//            },
             trailingIcon = {
                 IconButton(
                     onClick = {
@@ -143,9 +142,9 @@ fun SearchFieldOpenedBar(
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search
             ),
-            keyboardActions = KeyboardActions(
-                onSearch = { onSearchClick(text) }
-            ),
+//            keyboardActions = KeyboardActions(
+//                onSearch = { onSearchClick(text) }
+//            ),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Transparent,
                 cursorColor = Color.White.copy(alpha = ContentAlpha.medium)

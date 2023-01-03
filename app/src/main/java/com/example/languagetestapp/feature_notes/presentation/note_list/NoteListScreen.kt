@@ -17,10 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.languagetestapp.feature_notes.presentation.NoteActivityAction
 import com.example.languagetestapp.feature_notes.util.Constants
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -60,14 +57,11 @@ fun NoteListScreen(
                 onTextChange = {
                     viewModel.onAction(NoteListAction.SearchTextChanged(it))
                 },
-                onCloseClick = {
+                onCloseSearchClick = {
                     viewModel.onAction(NoteListAction.SearchTextChanged(""))
                     viewModel.onAction(NoteListAction.SearchWidgetStateChanged(SearchWidgetState.Closed))
                 },
-                onSearchClick = {
-                    Log.d(Constants.TAG_SEARCH, "searchText = $it")
-                },
-                onSearchTriggered = {
+                onOpenSearchClick = {
                     viewModel.onAction(NoteListAction.SearchWidgetStateChanged(SearchWidgetState.Opened))
                 },
                 onOpenDrawerClick = {

@@ -14,7 +14,9 @@ import com.example.languagetestapp.feature_notes.presentation.NoteActivityAction
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -56,19 +58,47 @@ class NoteListViewModel @Inject constructor(
                 state = state.copy(searchWidgetState = action.state)
             }
             is NoteListAction.SearchTextChanged -> {
-                state = state.copy(searchText = action.text)
+                onSearch(action.text)
             }
         }
     }
 
     init {
         fetchNotes()
+//        fetchNotesByQuery("")
         subscribeToNoteEvents()
     }
 
     fun onPullRefresh() {
         state = state.copy(isRefreshing = true)
         fetchNotes()
+    }
+
+    private var searchJob: Job? = null
+    private fun onSearch(query: String) {
+        state = state.copy(searchText = query)
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(500L)
+            fetchNotesByQuery(query)
+        }
+    }
+
+    private suspend fun fetchNotesByQuery(query: String) {
+        state = state.copy(isLoading = true)
+        val result = noteRepo.searchNotes(query)
+        when (result) {
+            is Resource.Success -> {
+                state = state.copy(
+                    notes = result.data ?: emptyList(),
+                    isLoading = false
+                )
+            }
+            is Resource.Error -> {
+                state = state.copy(isLoading = false)
+                _uiEvent.send(NoteListUiEvent.SnackbarMsg(result.message ?: "Unknown error"))
+            }
+        }
     }
 
     private fun fetchNotes() = viewModelScope.launch {
