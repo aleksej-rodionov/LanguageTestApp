@@ -28,12 +28,6 @@ class NoteViewModel @Inject constructor(
 
     fun onAction(action: NoteActivityAction) = viewModelScope.launch {
         when (action) {
-            is NoteActivityAction.SearchWidgetStateChanged -> {
-                state = state.copy(searchWidgetState = action.state)
-            }
-            is NoteActivityAction.SearchTextChanged -> {
-                state = state.copy(searchText = action.text)
-            }
             is NoteActivityAction.OnLogout -> {
                 logout()
             }
@@ -67,14 +61,10 @@ class NoteViewModel @Inject constructor(
 }
 
 data class NoteActivityState(
-    val searchWidgetState: SearchWidgetState = SearchWidgetState.Closed,
-    val searchText: String = "",
     val userEmail: String = "email not found"
 )
 
 sealed class NoteActivityAction {
-    data class SearchWidgetStateChanged(val state: SearchWidgetState): NoteActivityAction()
-    data class SearchTextChanged(val text: String): NoteActivityAction()
     object OnLogout: NoteActivityAction()
 }
 

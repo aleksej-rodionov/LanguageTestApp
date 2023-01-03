@@ -14,7 +14,8 @@ import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 fun NoteNavigation(
     navController: NavHostController,
     //this Composable need to pass the showSnackbar function on to the screens
-    showSnackbar: (String, SnackbarDuration) -> Unit
+    showSnackbar: (String, SnackbarDuration) -> Unit,
+    openDrawerClick: () -> Unit
 ) {
 
     NavHost(
@@ -29,6 +30,9 @@ fun NoteNavigation(
                     showSnackbar = showSnackbar,
                     onNavigate = {
                         navController.navigate(it.route)
+                    },
+                    openDrawerClick = {
+                        openDrawerClick()
                     }
                 )
             }

@@ -57,6 +57,11 @@ class NoteDetailsViewModel @Inject constructor(
                     }
                 }
             }
+            is NoteDetailsAction.Back -> {
+                viewModelScope.launch {
+                    _uiEvent.send(NoteDetailsUiEvent.PopBackStack)
+                }
+            }
         }
     }
 
@@ -125,7 +130,7 @@ data class NoteDetailsState(
 sealed class NoteDetailsAction {
     data class OnTextChanged(val text: String) : NoteDetailsAction()
     object OnClickSave : NoteDetailsAction()
-
+    object Back: NoteDetailsAction()
 }
 
 sealed class NoteDetailsUiEvent {

@@ -38,32 +38,6 @@ fun NoteMainComposable(
 
     Scaffold(
         scaffoldState = noteMainState.scaffoldState,
-        topBar = {
-            NoteTopBar(
-                state = state,
-                onTextChange = {
-                    noteViewModel.onAction(NoteActivityAction.SearchTextChanged(it))
-                },
-                onCloseClick = {
-                    noteViewModel.onAction(NoteActivityAction.SearchTextChanged(""))
-                    noteViewModel.onAction(NoteActivityAction.SearchWidgetStateChanged(SearchWidgetState.Closed))
-                },
-                onSearchClick = {
-                    Log.d(Constants.TAG_SEARCH, "searchText = $it")
-                },
-                onSearchTriggered = {
-                    noteViewModel.onAction(NoteActivityAction.SearchWidgetStateChanged(SearchWidgetState.Opened))
-                },
-                onOpenDrawerClick = {
-                    scope.launch {
-                        // Open the drawer with animation
-                        // and suspend until it is fully
-                        // opened or animation has been canceled
-                        noteMainState.scaffoldState.drawerState.open()
-                    }
-                }
-            )
-        },
         drawerGesturesEnabled = true,
         drawerContent = {
             NoteDrawerBody(
@@ -74,6 +48,7 @@ fun NoteMainComposable(
                 },
                 onChangePasswordClick = {
                     noteMainState.navController.navigate(NoteDest.ChangePasswordDest.route)
+                    scope.launch { noteMainState.scaffoldState.drawerState.close() }
                 }
             )
         }
@@ -87,6 +62,14 @@ fun NoteMainComposable(
                 navController = noteMainState.navController,
                 showSnackbar = { msg, dur ->
                     noteMainState.showSnackbar(msg, dur)
+                },
+                openDrawerClick = {
+                    scope.launch {
+                        // Open the drawer with animation
+                        // and suspend until it is fully
+                        // opened or animation has been canceled
+                        noteMainState.scaffoldState.drawerState.open()
+                    }
                 }
             )
         }

@@ -52,6 +52,11 @@ class ChangePasswordViewModel @Inject constructor(
             is ChangePasswordAction.Submit -> {
                 submitData()
             }
+            is ChangePasswordAction.Back -> {
+                viewModelScope.launch {
+                    _uiEvent.send(ChangePasswordUiEvent.PopBackStack)
+                }
+            }
         }
     }
 
@@ -125,6 +130,7 @@ sealed class ChangePasswordAction() {
     data class NewPasswordVisibilityChanged(val nowVisible: Boolean): ChangePasswordAction()
     data class RepeatedNewPasswordVisibilityChanged(val nowVisible: Boolean): ChangePasswordAction()
     object Submit: ChangePasswordAction()
+    object Back: ChangePasswordAction()
 }
 
 sealed class ChangePasswordUiEvent() {

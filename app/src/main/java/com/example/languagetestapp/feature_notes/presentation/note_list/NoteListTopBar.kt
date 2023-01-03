@@ -1,4 +1,4 @@
-package com.example.languagetestapp.feature_notes.presentation
+package com.example.languagetestapp.feature_notes.presentation.note_list
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -18,8 +19,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun NoteTopBar(
-    state: NoteActivityState,
+fun NoteListTopBar(
+    state: NoteListState,
     onTextChange: (String) -> Unit,
     onCloseClick: () -> Unit,
     onSearchClick: (String) -> Unit,
@@ -29,13 +30,13 @@ fun NoteTopBar(
     
     when (state.searchWidgetState) {
         is SearchWidgetState.Closed -> {
-            DefaultTopBar(
+            SearchFieldClosedBar(
                 onSearchClick = { onSearchTriggered() },
                 onOpenDrawerClick = { onOpenDrawerClick() }
             )
         }
         is SearchWidgetState.Opened -> {
-            SearchTopBar(
+            SearchFieldOpenedBar(
                 text = state.searchText,
                 onTextChange = onTextChange,
                 onSearchClick = onSearchClick,
@@ -46,7 +47,7 @@ fun NoteTopBar(
 }
 
 @Composable
-fun DefaultTopBar(
+fun SearchFieldClosedBar(
     onSearchClick: () -> Unit,
     onOpenDrawerClick: () -> Unit
 ) {
@@ -76,13 +77,13 @@ fun DefaultTopBar(
         },
         backgroundColor = MaterialTheme.colors.primary,
         title = {
-            Text(text = "Notes") // todo later change title depending on current Screen
+            Text(text = "Notes")
         }
     )
 }
 
 @Composable
-fun SearchTopBar(
+fun SearchFieldOpenedBar(
     text: String,
     onTextChange: (String) -> Unit,
     onSearchClick: (String) -> Unit,

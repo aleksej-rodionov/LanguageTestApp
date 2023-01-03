@@ -10,6 +10,7 @@ import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
+import com.example.languagetestapp.feature_notes.presentation.NoteActivityAction
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,6 +51,12 @@ class NoteListViewModel @Inject constructor(
             }
             is NoteListAction.OnCompletedChanged -> {
                 // todo
+            }
+            is NoteListAction.SearchWidgetStateChanged -> {
+                state = state.copy(searchWidgetState = action.state)
+            }
+            is NoteListAction.SearchTextChanged -> {
+                state = state.copy(searchText = action.text)
             }
         }
     }
@@ -154,7 +161,9 @@ class NoteListViewModel @Inject constructor(
 data class NoteListState(
     val notes: List<Note> = emptyList(),
     val isLoading: Boolean = false,
-    val isRefreshing: Boolean = false
+    val isRefreshing: Boolean = false,
+    val searchWidgetState: SearchWidgetState = SearchWidgetState.Closed,
+    val searchText: String = "",
 )
 
 sealed class NoteListAction {
@@ -162,6 +171,8 @@ sealed class NoteListAction {
     data class OnNoteClick(val note: Note) : NoteListAction()
     data class OnDeleteNoteClick(val note: Note) : NoteListAction()
     data class OnCompletedChanged(val note: Note, val checked: Boolean) : NoteListAction()
+    data class SearchWidgetStateChanged(val state: SearchWidgetState): NoteListAction()
+    data class SearchTextChanged(val text: String): NoteListAction()
 }
 
 sealed class NoteListUiEvent {

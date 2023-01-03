@@ -15,6 +15,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.languagetestapp.feature_notes.presentation.DefaultTopBar
+import com.example.languagetestapp.feature_notes.presentation.note_details.NoteDetailsAction
 
 @Composable
 fun ChangePasswordScreen(
@@ -41,6 +43,14 @@ fun ChangePasswordScreen(
 
     Scaffold(
         scaffoldState = scaffolState,
+        topBar = {
+            DefaultTopBar(
+                title = "Note details",
+                onBackClick = {
+                    viewModel.onAction(ChangePasswordAction.Back)
+                }
+            )
+        },
         modifier = Modifier.fillMaxSize()
     ) { pv ->
 

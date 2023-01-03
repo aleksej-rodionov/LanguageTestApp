@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.languagetestapp.feature_notes.presentation.DefaultTopBar
 
 @Composable
 fun NoteDetailsScreen(
@@ -39,6 +40,14 @@ fun NoteDetailsScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
+        topBar = {
+             DefaultTopBar(
+                 title = "Note details",
+                 onBackClick = {
+                     viewModel.onAction(NoteDetailsAction.Back)
+                 }
+             )
+        },
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingActionButton(

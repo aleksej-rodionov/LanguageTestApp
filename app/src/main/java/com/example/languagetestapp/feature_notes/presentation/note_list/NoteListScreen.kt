@@ -1,5 +1,6 @@
 package com.example.languagetestapp.feature_notes.presentation.note_list
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,13 +17,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.languagetestapp.feature_notes.presentation.NoteActivityAction
+import com.example.languagetestapp.feature_notes.util.Constants
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NoteListScreen(
     showSnackbar: (String, SnackbarDuration) -> Unit,
     onNavigate: (NoteListUiEvent.Navigate) -> Unit,
+    openDrawerClick: () -> Unit,
     viewModel: NoteListViewModel = hiltViewModel()
 ) {
 
@@ -49,6 +54,27 @@ fun NoteListScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
+        topBar = {
+            NoteListTopBar(
+                state = state,
+                onTextChange = {
+                    viewModel.onAction(NoteListAction.SearchTextChanged(it))
+                },
+                onCloseClick = {
+                    viewModel.onAction(NoteListAction.SearchTextChanged(""))
+                    viewModel.onAction(NoteListAction.SearchWidgetStateChanged(SearchWidgetState.Closed))
+                },
+                onSearchClick = {
+                    Log.d(Constants.TAG_SEARCH, "searchText = $it")
+                },
+                onSearchTriggered = {
+                    viewModel.onAction(NoteListAction.SearchWidgetStateChanged(SearchWidgetState.Opened))
+                },
+                onOpenDrawerClick = {
+                    openDrawerClick()
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 modifier = Modifier.padding(32.dp),
