@@ -1,6 +1,5 @@
 package com.example.languagetestapp.feature_notes.presentation
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -9,14 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import com.example.languagetestapp.feature_notes.util.Constants
+import com.example.languagetestapp.feature_profile.presentation.util.ProfileDest
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
 fun NoteMainComposable(
     toAuthActivity: () -> Unit,
+    logout: () -> Unit,
     noteViewModel: NoteViewModel
 ) {
     val state = noteViewModel.state
@@ -42,12 +42,16 @@ fun NoteMainComposable(
         drawerContent = {
             NoteDrawerBody(
                 email = state.userEmail,
-                onLogoutCLick = {
-                    noteViewModel.onAction(NoteActivityAction.OnLogout)
+                onLogoutCLick = { // todo remove then
+                    logout()
                     scope.launch { noteMainState.scaffoldState.drawerState.close() }
                 },
-                onChangePasswordClick = {
-                    noteMainState.navController.navigate(NoteDest.ChangePasswordDest.route)
+                onChangePasswordClick = {// todo remove then
+                    noteMainState.navController.navigate(ProfileDest.ChangePasswordDest.route)
+                    scope.launch { noteMainState.scaffoldState.drawerState.close() }
+                },
+                toProfileClick = {
+                    noteMainState.navController.navigate(ProfileDest.ProfileDestination.route)
                     scope.launch { noteMainState.scaffoldState.drawerState.close() }
                 }
             )
@@ -70,6 +74,9 @@ fun NoteMainComposable(
                         // opened or animation has been canceled
                         noteMainState.scaffoldState.drawerState.open()
                     }
+                },
+                logout = {
+                    logout()
                 }
             )
         }

@@ -18,6 +18,7 @@ class NoteActivity : ComponentActivity() {
                 val noteViewModel: NoteViewModel = hiltViewModel()
                 NoteMainComposable(
                     toAuthActivity = { startActivity<AuthActivity>() },
+                    logout = { noteViewModel.onAction(NoteActivityAction.OnLogout) },
                     noteViewModel = noteViewModel
                 )
             }

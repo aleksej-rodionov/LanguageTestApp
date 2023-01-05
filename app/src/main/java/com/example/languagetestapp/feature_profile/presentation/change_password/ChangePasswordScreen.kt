@@ -1,4 +1,4 @@
-package com.example.languagetestapp.feature_notes.presentation.change_password
+package com.example.languagetestapp.feature_profile.presentation.change_password
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions

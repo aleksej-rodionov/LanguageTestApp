@@ -5,17 +5,20 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.languagetestapp.feature_notes.presentation.change_password.ChangePasswordScreen
 import com.example.languagetestapp.feature_notes.presentation.note_details.NoteDetailsScreen
 import com.example.languagetestapp.feature_notes.presentation.note_list.NoteListScreen
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
+import com.example.languagetestapp.feature_profile.presentation.change_password.ChangePasswordScreen
+import com.example.languagetestapp.feature_profile.presentation.profile.ProfileScreen
+import com.example.languagetestapp.feature_profile.presentation.util.ProfileDest
 
 @Composable
 fun NoteNavigation(
     navController: NavHostController,
     //this Composable need to pass the showSnackbar function on to the screens
     showSnackbar: (String, SnackbarDuration) -> Unit,
-    openDrawerClick: () -> Unit
+    openDrawerClick: () -> Unit,
+    logout: () -> Unit
 ) {
 
     NavHost(
@@ -47,7 +50,20 @@ fun NoteNavigation(
             }
 
             composable(
-                route = NoteDest.ChangePasswordDest.route
+                route = ProfileDest.ProfileDestination.route
+            ) {
+                ProfileScreen(
+                    showSnackbar = showSnackbar,
+                    popBackStack = { navController.popBackStack() },
+                    logout = { logout() },
+                    onNavigate = {
+                        navController.navigate(it.route)
+                    }
+                )
+            }
+
+            composable(
+                route = ProfileDest.ChangePasswordDest.route
             ) {
                 ChangePasswordScreen(
                     showSnackbar = showSnackbar,

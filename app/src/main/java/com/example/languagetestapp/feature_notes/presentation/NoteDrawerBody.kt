@@ -1,5 +1,6 @@
 package com.example.languagetestapp.feature_notes.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -15,8 +16,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun NoteDrawerBody(
     email: String?,
-    onLogoutCLick: () -> Unit,
-    onChangePasswordClick: () -> Unit
+    onLogoutCLick: () -> Unit, // todo remove
+    onChangePasswordClick: () -> Unit,// todo remove then
+    toProfileClick: () -> Unit
 ) {
 
     Column(
@@ -32,7 +34,10 @@ fun NoteDrawerBody(
         ) {
 
             Text(
-                text = email ?: "Not logged in"
+                text = email ?: "Not logged in",
+                Modifier.clickable {
+                    toProfileClick()
+                }
             )
             IconButton(
                 onClick = {
@@ -46,7 +51,7 @@ fun NoteDrawerBody(
             }
         }
         Spacer(modifier = Modifier.height(32.dp))
-        Button(
+        Button( // todo remove
             onClick = { onChangePasswordClick() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {

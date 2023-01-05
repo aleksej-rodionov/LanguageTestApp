@@ -98,9 +98,9 @@ fun NoteListScreen(
 
                 items(state.notes.size) { index ->
                     val note = state.notes[index]
-                    if (index > 0) {
-                        Spacer(modifier = Modifier.padding(8.dp))
-                    }
+//                    if (index > 0) {
+//                        Spacer(modifier = Modifier.padding(8.dp))
+//                    }
                     NoteItem(
                         note = note,
                         onAction = viewModel::onAction,
