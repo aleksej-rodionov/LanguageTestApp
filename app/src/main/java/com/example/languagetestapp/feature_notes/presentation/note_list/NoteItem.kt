@@ -33,13 +33,13 @@ fun NoteItem(
         ) {
 
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
                 Text(
                     text = note.text,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 18.sp,
                 )
                 Spacer(modifier = Modifier.padding(8.dp))
                 IconButton(onClick = {
@@ -51,17 +51,6 @@ fun NoteItem(
                     )
                 }
             }
-
-            Checkbox(
-//                checked = note.completed,
-//                onCheckedChange = { checked ->
-//                    onAction(NoteListAction.OnCompletedChanged(note, checked))
-//                }
-                checked = true,
-                onCheckedChange = {
-                    // empty
-                }
-            )
         }
     }
 }
