@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,7 +30,8 @@ import com.example.languagetestapp.R
 @Composable
 fun ProfileDetail(
     state: ProfileState,
-    onChangePasswordClick: () -> Unit
+    onChangePasswordClick: () -> Unit,
+    onToggleBottomSheet: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -67,10 +70,13 @@ fun ProfileDetail(
                     shape = CircleShape
                 )
                 .layoutId("profile_pic")
+                .clickable {
+                    onToggleBottomSheet()
+                }
         )
 
         Text(
-            text = "test.email.cz",
+            text = "test@email.cz",
             fontSize = 24.sp,
             modifier = Modifier.layoutId("email"),
             color = Color.White
@@ -96,7 +102,8 @@ fun ProfileDetail(
                     .fillMaxWidth()
                     .clickable {
                         onChangePasswordClick()
-                    }
+                    },
+                imageVector = Icons.Default.Lock
             )
             Divider()
         }

@@ -39,6 +39,12 @@ class ProfileViewModel @Inject constructor(
             is ProfileAction.OnBackClick -> {
                 viewModelScope.launch { _uiEvent.send(ProfileUiEvent.PopBackStack) }
             }
+            is ProfileAction.OnPickFileImage -> {
+                // todo
+            }
+            is ProfileAction.OnCamera -> {
+                //todo
+            }
         }
     }
 }
@@ -55,6 +61,8 @@ sealed class ProfileAction {
     object OnLogoutClick: ProfileAction()
     object OnPhotoClick: ProfileAction()
     object OnBackClick: ProfileAction()
+    object OnPickFileImage: ProfileAction()
+    object OnCamera: ProfileAction()
 }
 
 sealed class ProfileUiEvent {

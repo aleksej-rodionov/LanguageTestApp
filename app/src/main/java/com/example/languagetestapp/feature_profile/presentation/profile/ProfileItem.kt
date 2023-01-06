@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -17,7 +18,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ProfileItem(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector
 ) {
 
     Row(
@@ -36,7 +38,7 @@ fun ProfileItem(
                 .padding(16.dp)
         )
         Icon(
-            imageVector = Icons.Default.Lock,
+            imageVector = imageVector,
             contentDescription = "Delete",
             modifier = Modifier.padding(16.dp)
         )
