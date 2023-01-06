@@ -16,8 +16,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun NoteDrawerBody(
     email: String?,
-    onLogoutCLick: () -> Unit, // todo remove
-    onChangePasswordClick: () -> Unit,// todo remove then
     toProfileClick: () -> Unit
 ) {
 

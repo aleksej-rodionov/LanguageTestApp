@@ -42,14 +42,6 @@ fun NoteMainComposable(
         drawerContent = {
             NoteDrawerBody(
                 email = state.userEmail,
-                onLogoutCLick = { // todo remove then
-                    logout()
-                    scope.launch { noteMainState.scaffoldState.drawerState.close() }
-                },
-                onChangePasswordClick = {// todo remove then
-                    noteMainState.navController.navigate(ProfileDest.ChangePasswordDest.route)
-                    scope.launch { noteMainState.scaffoldState.drawerState.close() }
-                },
                 toProfileClick = {
                     noteMainState.navController.navigate(ProfileDest.ProfileDestination.route)
                     scope.launch { noteMainState.scaffoldState.drawerState.close() }

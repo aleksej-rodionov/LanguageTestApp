@@ -27,7 +27,7 @@ class ProfileViewModel @Inject constructor(
         when (action) {
             is ProfileAction.OnChangePasswordClick -> {
                 viewModelScope.launch {
-                    _uiEvent.send(ProfileUiEvent.Navigate(ProfileDest.ProfileDestination.route))
+                    _uiEvent.send(ProfileUiEvent.Navigate(ProfileDest.ChangePasswordDest.route))
                 }
             }
             is ProfileAction.OnLogoutClick -> {

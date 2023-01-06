@@ -94,7 +94,6 @@ fun ProfileDetail(
                 text = "Change password",
                 modifier = Modifier
                     .fillMaxWidth()
-//                    .padding(16.dp)
                     .clickable {
                         onChangePasswordClick()
                     }
