@@ -1,0 +1,157 @@
+{
+  ConstraintSets: {
+    start: {
+      profile_pic: {
+        width: 40,
+        height: 40,
+        start: ['parent', 'start', 16],
+        top: ['parent', 'top', 16],
+      },
+      email: {
+        top: ['profile_pic', 'top'],
+        bottom: ['profile_pic', 'bottom'],
+        start: ['profile_pic', 'end', 16]
+      },
+      box: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top'],
+        bottom: ['parent', 'bottom', -16],
+      },
+      content_bg: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['profile_pic','bottom', 16],
+        bottom: ['parent','bottom'],
+      },
+      text: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['content_bg','top', 16],
+        bottom: ['parent','bottom'],
+      }
+    },
+//    middle: {
+//      profile_pic: {
+//        width: 40,
+//        height: 40,
+//        start: ['parent', 'start'],
+//        end: ['parent', 'end'],
+//        top: ['parent', 'top', 16],
+//        custom: {
+//          background: '#FFFFFF'
+//        }
+//      },
+//      email: {
+//        start: ['profile_pic', 'start', -32],
+//        top: ['profile_pic', 'bottom', 16],
+//        end: ['parent', 'end'],
+//      },
+//      box: {
+//        width: 'spread',
+//        height: 'spread',
+//        start: ['parent', 'start'],
+//        end: ['parent', 'end'],
+//        top: ['parent', 'top'],
+//        bottom: ['parent', 'bottom', -16],
+//      },
+//      content_bg: {
+//        width: 'spread',
+//        height: 'spread',
+//        start: ['parent', 'start'],
+//        end: ['parent', 'end'],
+//        top: ['profile_pic','bottom', 16],
+//        bottom: ['parent','bottom'],
+//      },
+//      text: {
+//        width: 'spread',
+//        height: 'spread',
+//        start: ['parent', 'start'],
+//        end: ['parent', 'end'],
+//        top: ['content_bg','top', 16],
+//        bottom: ['parent','bottom'],
+//      }
+//    },
+    end: {
+      profile_pic: {
+        width: 150,
+        height: 150,
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top', 16],
+      },
+      email: {
+        top: ['profile_pic', 'bottom', 16],
+        end: ['parent', 'end'],
+        start: ['parent', 'start']
+      },
+      box: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['parent', 'top'],
+        bottom: ['parent', 'bottom', -16],
+      },
+      content_bg: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['email','bottom', 16],
+        bottom: ['parent','bottom'],
+      },
+      text: {
+        width: 'spread',
+        height: 'spread',
+        start: ['parent', 'start'],
+        end: ['parent', 'end'],
+        top: ['content_bg','top', 16],
+        bottom: ['parent','bottom']
+      }
+    }
+  },
+  Transitions: {
+    default: {
+      from: 'start',
+      to: 'end',
+      onSwipe: {
+        anchor: 'content_bg',
+        direction: 'down',
+        side: 'top'
+      },
+//      pathMotionArc: 'startHorizontal',
+      KeyFrames: {
+        KeyPositions: [
+          {
+            target: ['email'],
+            frames: [25, 50, 75],
+            percentX: [0.5, 0.55, 0.55],
+          }
+        ],
+        KeyAttributes: [
+          {
+            target: ['profile_pic'],
+            frames: [0, 50, 100],
+            scaleX: [1, 0.7, 1],
+            scaleY: [1, 0.7, 1]
+          },
+//          {
+//            target: ['email'],
+//            frames: [0, 50, 100],
+//            translationX: [0, 100, 0],
+//          }
+        ],
+        KeyCycles: [
+
+        ]
+      }
+    }
+  }
+}

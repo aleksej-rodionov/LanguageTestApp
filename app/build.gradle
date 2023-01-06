@@ -82,8 +82,10 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
     // Compose Material Icons extended
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
-    // SwipeRefresh
+    // Compose SwipeRefresh
     implementation "com.google.accompanist:accompanist-swiperefresh:0.27.0"
+    // Compose MotionLayout
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha05"
 
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
