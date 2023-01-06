@@ -1,12 +1,15 @@
 package com.example.languagetestapp.feature_profile.presentation.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun ProfileBar(
@@ -40,9 +43,11 @@ fun ProfileBar(
                 )
             }
         },
-        backgroundColor = MaterialTheme.colors.primary,
+        backgroundColor = Color.DarkGray,
         title = {
-            Text(text = title)
-        }
+            Text(text = title, color = Color.White)
+        },
+        modifier = Modifier.background(Color.DarkGray),
+        elevation = 0.dp
     )
 }

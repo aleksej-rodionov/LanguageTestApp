@@ -39,23 +39,7 @@ fun NoteDrawerBody(
                     toProfileClick()
                 }
             )
-            IconButton(
-                onClick = {
-                    onLogoutCLick()
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Logout,
-                    contentDescription = "Logout"
-                )
-            }
         }
         Spacer(modifier = Modifier.height(32.dp))
-        Button( // todo remove
-            onClick = { onChangePasswordClick() },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(text = "Change password")
-        }
     }
 }

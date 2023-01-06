@@ -1,13 +1,13 @@
 package com.example.languagetestapp.feature_profile.presentation.profile
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.languagetestapp.feature_profile.presentation.util.ProfileDest
 
 @Composable
 fun ProfileScreen(
@@ -19,6 +19,7 @@ fun ProfileScreen(
 ) {
 
     val state = viewModel.state
+    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -39,14 +40,37 @@ fun ProfileScreen(
         }
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background
-    ) {
-        ProfileDetail(
-            state = state,
-            onBackClick = { viewModel.onAction(ProfileAction.OnBackClick) },
-            onLogoutClick = { viewModel.onAction(ProfileAction.OnLogoutClick) }
-        )
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = { ProfileBar(
+                title = ""/*"Profile"*/,
+                onBackClick = {
+                    viewModel.onAction(ProfileAction.OnBackClick)
+                },
+                onLogoutClick = {
+                    viewModel.onAction(ProfileAction.OnLogoutClick)
+                }
+            ) }
+    ) { pv ->
+
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(pv),
+            color = MaterialTheme.colors.background
+        ) {
+
+            ProfileDetail(
+                state = state,
+                onChangePasswordClick = {
+                    viewModel.onAction(ProfileAction.OnChangePasswordClick)
+                }
+            )
+        }
     }
 }
+
+
+
+
+

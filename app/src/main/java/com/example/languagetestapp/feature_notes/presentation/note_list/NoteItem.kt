@@ -22,7 +22,7 @@ fun NoteItem(
     modifier: Modifier = Modifier,
     onAction: (NoteListAction) -> Unit
 ) {
-    
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -35,16 +35,16 @@ fun NoteItem(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
                 Text(
                     text = note.text,
                     fontSize = 18.sp,
-                    maxLines = 1,
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
+                    maxLines = 3
                 )
                 IconButton(onClick = {
                     onAction(NoteListAction.OnDeleteNoteClick(note))
@@ -55,6 +55,17 @@ fun NoteItem(
                     )
                 }
             }
+
+//            Checkbox(
+////                checked = note.completed,
+////                onCheckedChange = { checked ->
+////                    onAction(NoteListAction.OnCompletedChanged(note, checked))
+////                }
+//                checked = true,
+//                onCheckedChange = {
+//                    // empty
+//                }
+//            )
         }
     }
 }

@@ -3,8 +3,10 @@ package com.example.languagetestapp.feature_profile.presentation.profile
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -26,8 +28,7 @@ import com.example.languagetestapp.R
 @Composable
 fun ProfileDetail(
     state: ProfileState,
-    onBackClick: () -> Unit,
-    onLogoutClick: () -> Unit
+    onChangePasswordClick: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -61,6 +62,7 @@ fun ProfileDetail(
                 .clip(CircleShape)
                 .border(
                     width = 2.dp,
+//                    color = properties.value.color("background"),
                     color = Color.White,
                     shape = CircleShape
                 )
@@ -71,7 +73,7 @@ fun ProfileDetail(
             text = "test.email.cz",
             fontSize = 24.sp,
             modifier = Modifier.layoutId("email"),
-            color = Color.White,
+            color = Color.White
         )
 
         Box(
@@ -81,46 +83,24 @@ fun ProfileDetail(
                 .layoutId("content_bg")
         )
 
-        Text(
-            text = "Unto the angel of the church of Ephesus write; These things saith he that holdeth the seven stars in his right hand, who walketh in the midst of the seven golden candlesticks;\n" +
-                    "I know thy works, and thy labour, and thy patience, and how thou canst not bear them which are evil: and thou hast tried them which say they are apostles, and are not, and hast found them liars:\n" +
-                    "And hast borne, and hast patience, and for my name's sake hast laboured, and hast not fainted.\n" +
-                    "Nevertheless I have somewhat against thee, because thou hast left thy first love.\n" +
-                    "Remember therefore from whence thou art fallen, and repent, and do the first works; or else I will come unto thee quickly, and will remove thy candlestick out of his place, except thou repent.",
+        Column(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .layoutId("text")
-                .padding(horizontal = 16.dp),
-            fontSize = 14.sp
-        )
+                .padding(horizontal = 16.dp)
+        ) {
 
-//        Button(
-//            onClick = {
-//
-//            },
-//            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-//            modifier = Modifier.layoutId("back"), contentPadding = PaddingValues(4.dp),
-//            elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
-//        ) {
-//            Icon(
-//                Icons.Default.ArrowBack,
-//                contentDescription = ""
-//            )
-//        }
-//
-//        Button(
-//            onClick = {
-//
-//            },
-//            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
-//            modifier = Modifier.layoutId("logout"), contentPadding = PaddingValues(4.dp),
-//            elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
-//        ) {
-//            Icon(
-//                Icons.Default.Logout,
-//                contentDescription = ""
-//            )
-//        }
+            ProfileItem(
+                text = "Change password",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clickable {
+                        onChangePasswordClick()
+                    }
+            )
+            Divider()
+        }
     }
 }
 
