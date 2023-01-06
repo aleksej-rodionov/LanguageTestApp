@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.languagetestapp.feature_profile.presentation.util.ProfileDest
 
 @Composable
 fun ProfileScreen(

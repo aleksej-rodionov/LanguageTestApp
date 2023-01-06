@@ -1,7 +1,8 @@
 package com.example.languagetestapp.feature_notes.presentation.note_list
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Checkbox
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -12,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.languagetestapp.feature_notes.domain.model.Note
 
