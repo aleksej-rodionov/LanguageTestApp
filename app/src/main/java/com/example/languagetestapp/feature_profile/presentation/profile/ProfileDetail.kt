@@ -31,7 +31,7 @@ import com.example.languagetestapp.R
 fun ProfileDetail(
     state: ProfileState,
     onChangePasswordClick: () -> Unit,
-    onToggleBottomSheet: () -> Unit
+    onAvaClick: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -71,7 +71,7 @@ fun ProfileDetail(
                 )
                 .layoutId("profile_pic")
                 .clickable {
-                    onToggleBottomSheet()
+                    onAvaClick()
                 }
         )
 

@@ -86,6 +86,8 @@ dependencies {
     implementation "com.google.accompanist:accompanist-swiperefresh:0.27.0"
     // Compose MotionLayout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha05"
+    // Compose Permissions
+    implementation "com.google.accompanist:accompanist-permissions:0.23.1"
 
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
