@@ -123,8 +123,9 @@
       to: 'end',
       onSwipe: {
         anchor: 'content_bg',
-        direction: 'down',
-        side: 'top'
+//        direction: 'up',
+        side: 'top',
+        mode: 'spring' // without it content_bg flies outside the screen on flinging
       },
 //      pathMotionArc: 'startHorizontal',
       KeyFrames: {
