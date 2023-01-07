@@ -1,10 +1,12 @@
 package com.example.languagetestapp.core.util.permission
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.languagetestapp.R
+import com.example.languagetestapp.feature_profile.presentation.util.Constants.TAG_PERMIT
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
@@ -15,8 +17,12 @@ fun HandlePermissionsRequest(
     permissionHandler: PermissionHandler
 ) {
 
+    Log.d(TAG_PERMIT, "HandlePermissionsRequest: permissions = $permissions")
+
     val state by permissionHandler.state.collectAsState()
     val permissionState = rememberMultiplePermissionsState(permissions = permissions)
+
+//    Log.d(TAG_PERMIT, "HandlePermissionsRequest: rememberMultiPermState = ${permissionState}")
 
     LaunchedEffect(permissionState) { // todo learn the rules of passing 1st argument
         permissionHandler.onEvent(PermissionHandler.Event.PermissionsStateUpdated(permissionState))

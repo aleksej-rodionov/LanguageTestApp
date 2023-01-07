@@ -1,5 +1,6 @@
 package com.example.languagetestapp.feature_profile.presentation.camera.ui_elements
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
@@ -12,29 +13,14 @@ import com.example.languagetestapp.feature_profile.presentation.camera.CameraEve
 import com.example.languagetestapp.feature_profile.presentation.camera.CameraViewModel
 
 @Composable
-fun CameraScreenContent(
-    allPermissionsGranted: Boolean,
-    onEvent: (CameraEvent) -> Unit
-) {
-    if (!allPermissionsGranted) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(onClick = {
-                onEvent(CameraEvent.PermissionRequired)//todo launch this fun immediately without diwplaaaaaying this stupid Button
-            }) {
-                Text(text = "Nenuzhnaya knopka \nkotoruyu potom nada udalit\'\ni srazu zapuskat\' onEvent()")
-            }
-        }
-    } else {
-        Box(modifier = Modifier.fillMaxSize()) {
+fun CameraScreenContent() {
 
-            Text(
-                text = "Here gonna be camera launched",
-                modifier = Modifier.align(Alignment.Center)
-            )
+    Log.d("TAG_PERMIT_ACT_REQ", "CameraScreenContent: CALLED")
 
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Here gonna be camera launched",
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
