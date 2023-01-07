@@ -19,16 +19,16 @@ fun HandlePermissionsRequest(
     val permissionState = rememberMultiplePermissionsState(permissions = permissions)
 
     LaunchedEffect(permissionState) { // todo learn the rules of passing 1st argument
-        permissionHandler.onAction(PermissionHandler.PermissionAction.PermissionsStateUpdated(permissionState))
+        permissionHandler.onEvent(PermissionHandler.Event.PermissionsStateUpdated(permissionState))
         when {
             permissionState.allPermissionsGranted -> {
-                permissionHandler.onAction(PermissionHandler.PermissionAction.PermissionsGranted)
+                permissionHandler.onEvent(PermissionHandler.Event.PermissionsGranted)
             }
             permissionState.permissionRequested -> {
-                permissionHandler.onAction(PermissionHandler.PermissionAction.PermissionNeverAskAgain)
+                permissionHandler.onEvent(PermissionHandler.Event.PermissionNeverAskAgain)
             }
             else -> {
-                permissionHandler.onAction(PermissionHandler.PermissionAction.PermissionDenied)
+                permissionHandler.onEvent(PermissionHandler.Event.PermissionDenied)
             }
         }
     }
@@ -39,10 +39,10 @@ fun HandlePermissionsRequest(
         rationaleText = R.string.permission_rationale,
         neverAskAgainText = R.string.permission_rationale,
         onOkTapped = {
-            permissionHandler.onAction(PermissionHandler.PermissionAction.PermissionRationaleOkTapped)
+            permissionHandler.onEvent(PermissionHandler.Event.PermissionRationaleOkTapped)
         },
         onSettingsTapped = {
-            permissionHandler.onAction(PermissionHandler.PermissionAction.PermissionSettingsTapped)
+            permissionHandler.onEvent(PermissionHandler.Event.PermissionSettingsTapped)
         }
     )
 }

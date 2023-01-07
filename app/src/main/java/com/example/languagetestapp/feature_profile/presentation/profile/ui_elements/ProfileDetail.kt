@@ -29,7 +29,6 @@ import com.example.languagetestapp.R
 @OptIn(ExperimentalMotionApi::class)
 @Composable
 fun ProfileDetail(
-    state: ProfileState,
     onChangePasswordClick: () -> Unit,
     onAvaClick: () -> Unit
 ) {

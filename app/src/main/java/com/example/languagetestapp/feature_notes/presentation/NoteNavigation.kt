@@ -8,7 +8,9 @@ import androidx.navigation.compose.composable
 import com.example.languagetestapp.feature_notes.presentation.note_details.NoteDetailsScreen
 import com.example.languagetestapp.feature_notes.presentation.note_list.NoteListScreen
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
+import com.example.languagetestapp.feature_profile.presentation.camera.CameraScreen
 import com.example.languagetestapp.feature_profile.presentation.change_password.ChangePasswordScreen
+import com.example.languagetestapp.feature_profile.presentation.pick_image.PickImageScreen
 import com.example.languagetestapp.feature_profile.presentation.profile.ProfileScreen
 import com.example.languagetestapp.feature_profile.presentation.util.ProfileDest
 
@@ -66,6 +68,24 @@ fun NoteNavigation(
                 route = ProfileDest.ChangePasswordDest.route
             ) {
                 ChangePasswordScreen(
+                    showSnackbar = showSnackbar,
+                    onPopBackStack = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = ProfileDest.CameraDest.route
+            ) {
+                CameraScreen(
+                    showSnackbar = showSnackbar,
+                    onPopBackStack = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = ProfileDest.PickImageDest.route
+            ) {
+                PickImageScreen(
                     showSnackbar = showSnackbar,
                     onPopBackStack = { navController.popBackStack() }
                 )

@@ -13,16 +13,16 @@ class PermissionHandler {
     private val _state = MutableStateFlow(PermissionState())
     val state: StateFlow<PermissionState> = _state.asStateFlow()
 
-    fun onAction(action: PermissionAction) { //todo rename to onAction?
+    fun onEvent(action: Event) { //todo rename to onAction?
         when (action) {
-            PermissionAction.PermissionDenied -> onPermissionDenied()
-            PermissionAction.PermissionDismissTapped -> onPermissionDismissTapped()
-            PermissionAction.PermissionNeverAskAgain -> onPermissionNeverShowAgain()
-            PermissionAction.PermissionRationaleOkTapped -> onPermissionRationaleOkTapped()
-            PermissionAction.PermissionRequired -> onPermissionRequired()
-            PermissionAction.PermissionSettingsTapped -> onPermissionSettingsTapped()
-            PermissionAction.PermissionsGranted -> onPermissionGranted()
-            is PermissionAction.PermissionsStateUpdated -> onPermissionsStateUpdated(action.permissionsState)
+            Event.PermissionDenied -> onPermissionDenied()
+            Event.PermissionDismissTapped -> onPermissionDismissTapped()
+            Event.PermissionNeverAskAgain -> onPermissionNeverShowAgain()
+            Event.PermissionRationaleOkTapped -> onPermissionRationaleOkTapped()
+            Event.PermissionRequired -> onPermissionRequired()
+            Event.PermissionSettingsTapped -> onPermissionSettingsTapped()
+            Event.PermissionsGranted -> onPermissionGranted()
+            is Event.PermissionsStateUpdated -> onPermissionsStateUpdated(action.permissionsState)
         }
     }
 
@@ -31,16 +31,16 @@ class PermissionHandler {
         val permissionAction: Action = Action.NO_ACTION
     )
 
-    sealed class PermissionAction {
-        object PermissionDenied : PermissionAction()
-        object PermissionsGranted : PermissionAction()
-        object PermissionSettingsTapped : PermissionAction()
-        object PermissionNeverAskAgain : PermissionAction()
-        object PermissionDismissTapped : PermissionAction()
-        object PermissionRationaleOkTapped : PermissionAction()
-        object PermissionRequired : PermissionAction()
+    sealed class Event {
+        object PermissionDenied : Event()
+        object PermissionsGranted : Event()
+        object PermissionSettingsTapped : Event()
+        object PermissionNeverAskAgain : Event()
+        object PermissionDismissTapped : Event()
+        object PermissionRationaleOkTapped : Event()
+        object PermissionRequired : Event()
         data class PermissionsStateUpdated(val permissionsState: MultiplePermissionsState) :
-            PermissionAction()
+            Event()
     }
 
     enum class Action {

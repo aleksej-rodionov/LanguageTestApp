@@ -33,17 +33,18 @@ class ProfileViewModel @Inject constructor(
             is ProfileAction.OnLogoutClick -> {
                 viewModelScope.launch { _uiEvent.send(ProfileUiEvent.Logout) }
             }
-            is ProfileAction.OnPhotoClick -> {
-                //todo
-            }
             is ProfileAction.OnBackClick -> {
                 viewModelScope.launch { _uiEvent.send(ProfileUiEvent.PopBackStack) }
             }
-            is ProfileAction.OnPickFileImage -> {
-                // todo
-            }
             is ProfileAction.OnCamera -> {
-                //todo
+                viewModelScope.launch {
+                    _uiEvent.send(ProfileUiEvent.Navigate(ProfileDest.CameraDest.route))
+                }
+            }
+            is ProfileAction.OnPickFileImage -> {
+                viewModelScope.launch {
+                    _uiEvent.send(ProfileUiEvent.Navigate(ProfileDest.PickImageDest.route))
+                }
             }
         }
     }
@@ -59,7 +60,6 @@ data class ProfileState(
 sealed class ProfileAction {
     object OnChangePasswordClick: ProfileAction()
     object OnLogoutClick: ProfileAction()
-    object OnPhotoClick: ProfileAction()
     object OnBackClick: ProfileAction()
     object OnPickFileImage: ProfileAction()
     object OnCamera: ProfileAction()
