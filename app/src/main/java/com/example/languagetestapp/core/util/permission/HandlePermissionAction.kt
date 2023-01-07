@@ -32,7 +32,7 @@ fun HandlePermissionAction(
         PermissionHandler.Action.REQUEST_PERMISSION -> {
             LaunchedEffect(true) {
                 if (permissionStates?.allPermissionsGranted == false) {
-                    permissionStates?.launchMultiplePermissionRequest()
+                    permissionStates.launchMultiplePermissionRequest()
                 }
             }
         }
