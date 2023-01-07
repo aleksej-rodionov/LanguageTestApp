@@ -60,7 +60,8 @@ fun ProfileScreen(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { ProfileBar(
+        topBar = {
+            ProfileBar(
                 title = ""/*"Profile"*/,
                 onBackClick = {
                     viewModel.onAction(ProfileAction.OnBackClick)
@@ -68,7 +69,8 @@ fun ProfileScreen(
                 onLogoutClick = {
                     viewModel.onAction(ProfileAction.OnLogoutClick)
                 }
-            ) }
+            )
+        }
     ) { pv ->
 
         val sheetState = rememberModalBottomSheetState(
@@ -89,8 +91,18 @@ fun ProfileScreen(
             sheetContent = {
 
                 BottomSheetContent(
-                    onCameraClick = { viewModel.onAction(ProfileAction.OnCamera) },
-                    onPickFileClick = { viewModel.onAction(ProfileAction.OnPickFileImage) }
+                    onCameraClick = {
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        viewModel.onAction(ProfileAction.OnCamera)
+                    },
+                    onPickFileClick = {
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        viewModel.onAction(ProfileAction.OnPickFileImage)
+                    }
                 )
             },
         ) {
@@ -101,11 +113,7 @@ fun ProfileScreen(
                 },
                 onAvaClick = {
                     scope.launch {
-                        if (sheetState.isVisible) {
-                            sheetState.hide()
-                        } else {
-                            sheetState.show()
-                        }
+                        sheetState.show()
                     }
                 }
             )
