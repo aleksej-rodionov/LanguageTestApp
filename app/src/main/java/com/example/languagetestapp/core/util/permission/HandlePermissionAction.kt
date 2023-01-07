@@ -13,6 +13,7 @@ import com.example.languagetestapp.R
 import com.example.languagetestapp.feature_profile.presentation.util.Constants.TAG_PERMIT
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
+import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -22,33 +23,18 @@ fun HandlePermissionAction(
     @StringRes rationaleText: Int,
     @StringRes neverAskAgainText: Int,
     onOkTapped: () -> Unit,
-    onSettingsTapped: () -> Unit,
+    onSettingsTapped: () -> Unit
 ) {
 
     val context = LocalContext.current
 
     when (action) {
         PermissionHandler.Action.REQUEST_PERMISSION -> {
-//            permissionStates?.let {
-                LaunchedEffect(true) {
-                    permissionStates?.apply {
-                      Log.d("TAG_PERMIT_ACT_REQ", "permissions = $permissions")
-                      Log.d("TAG_PERMIT_ACT_REQ", "revokedPermissions = $revokedPermissions")
-                      Log.d("TAG_PERMIT_ACT_REQ", "allPermissionsGranted = $allPermissionsGranted")
-                      Log.d("TAG_PERMIT_ACT_REQ", "shouldShowRationale = $shouldShowRationale")
-                      Log.d("TAG_PERMIT_ACT_REQ", "permissionRequested = $permissionRequested")
-                    }
-
-
-                    /**
-                     * TODO
-                     * This should always be triggered from non-composable scope,
-                     * for example, from a side-effect or a non-composable callback.
-                     * Otherwise, this will result in an IllegalStateException.
-                     */
+            LaunchedEffect(true) {
+                if (permissionStates?.allPermissionsGranted == false) {
                     permissionStates?.launchMultiplePermissionRequest()
                 }
-//            }
+            }
         }
         PermissionHandler.Action.SHOW_RATIONALE -> {
             PermissionRationaleDialog(

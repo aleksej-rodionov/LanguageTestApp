@@ -55,6 +55,8 @@ fun CameraScreen(
 
     val allPermissionsGranted = //todo при возвращении перепроверять это говно (аналог onResume)
         state.multiplePermissionsState?.allPermissionsGranted ?: false
+    // todo trigger it in VM??
+
     Log.d("TAG_PERMIT_ACT_REQ", "CameraScreen: allPermissionsGranted = $allPermissionsGranted")
 
     if (!allPermissionsGranted) {

@@ -13,10 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.languagetestapp.core.di.ApplicationScope
 import com.example.languagetestapp.core.util.permission.HandlePermissionsRequest
 import com.example.languagetestapp.feature_profile.presentation.camera.CameraEvent
 import com.example.languagetestapp.feature_profile.presentation.pick_image.ui_elements.PickImageScreenContent
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable

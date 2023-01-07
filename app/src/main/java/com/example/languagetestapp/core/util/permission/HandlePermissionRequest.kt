@@ -9,6 +9,7 @@ import com.example.languagetestapp.R
 import com.example.languagetestapp.feature_profile.presentation.util.Constants.TAG_PERMIT
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable

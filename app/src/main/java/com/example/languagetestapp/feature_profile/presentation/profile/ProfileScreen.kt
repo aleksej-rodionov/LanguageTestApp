@@ -35,8 +35,11 @@ fun ProfileScreen(
         )
     }
     val permissionHandler = remember(permissions) { PermissionHandler() }
-    val permissionsStates by permissionHandler.state.collectAsState()
-    HandlePermissionsRequest(permissions = permissions, permissionHandler = permissionHandler)
+//    val permissionsStates by permissionHandler.state.collectAsState()
+//    HandlePermissionsRequest(
+//        permissions = permissions,
+//        permissionHandler = permissionHandler
+//    )
 //====================PERMISSION END====================
 
     LaunchedEffect(key1 = true) {
