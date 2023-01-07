@@ -27,24 +27,26 @@ class CameraViewModel @Inject constructor(
 
     var state by mutableStateOf(CameraState())
 
-    private val _uiEvent = Channel<CameraUiEffect>()
-    val uiEffect = _uiEvent.receiveAsFlow()
+    private val _uiEffect = Channel<CameraUiEffect>()
+    val uiEffect = _uiEffect.receiveAsFlow()
 
     init {
         permissionsHandler.state.onEach { permHandlerState ->
-            state = state.copy(multiplePermissionsState = permHandlerState.multiplePermissionState)
+            state = state.copy(
+                multiplePermissionsState = permHandlerState.multiplePermissionState
+            )
         }.catch {
-//            viewModelScope.launch {
-                _uiEvent.send(CameraUiEffect.SnackbarMsg(it.message ?: "Error fetching PermHandler State"))
-//            }
+            _uiEffect.send(CameraUiEffect.SnackbarMsg(
+                    it.message ?: "Error fetching PermHandler State"
+                ))
         }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: CameraEvent) {
         when (event) {
             is CameraEvent.PermDenied -> {
-                viewModelScope.launch { _uiEvent.send(CameraUiEffect.SnackbarMsg("Camera Perm Denied nax!!!!!!!00")) }
-                viewModelScope.launch { _uiEvent.send(CameraUiEffect.PopBackStack) }
+                viewModelScope.launch { _uiEffect.send(CameraUiEffect.SnackbarMsg("Camera Perm Denied nax!!!!!!!00")) }
+                viewModelScope.launch { _uiEffect.send(CameraUiEffect.PopBackStack) }
             }
             is CameraEvent.PermissionRequired -> {
                 onPermissionRequired()

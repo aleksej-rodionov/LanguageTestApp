@@ -92,15 +92,11 @@ fun ProfileScreen(
 
                 BottomSheetContent(
                     onCameraClick = {
-                        scope.launch {
-                            sheetState.hide()
-                        }
+//                        scope.launch { sheetState.hide() } //todo fix sometimes can't get in time
                         viewModel.onAction(ProfileAction.OnCamera)
                     },
                     onPickFileClick = {
-                        scope.launch {
-                            sheetState.hide()
-                        }
+//                        scope.launch {  sheetState.hide() } //todo fix sometimes can't get in time
                         viewModel.onAction(ProfileAction.OnPickFileImage)
                     }
                 )
