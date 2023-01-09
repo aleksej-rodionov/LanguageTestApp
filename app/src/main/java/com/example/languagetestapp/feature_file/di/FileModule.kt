@@ -65,7 +65,7 @@ object FileModule {
 
 
     //====================CONSTANTS====================
-    const val FILE_URL = "http://192.168.16.101:3500/"
+    const val FILE_URL = "http://192.168.16.104:3500/"
     const val FILE_URL_MACHINE = "http://10.0.2.2:3500/"
     const val FILE_URL_BRANCH = "http://192.168.1.239:3500/"
 }

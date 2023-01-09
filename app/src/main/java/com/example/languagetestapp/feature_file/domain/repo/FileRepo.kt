@@ -15,7 +15,7 @@ interface FileRepo {
 
     fun copyFileFromExternal(externalUri: Uri): Resource<File>
 
-    suspend fun startUploadingImage(imageFile: File): Resource<String>
+    fun executeUploadingBytes(imageFile: File): Flow<ProgressResource<MultipartBody.Part>>
 }
 
 
@@ -29,5 +29,5 @@ sealed class ProgressResource<T>(
 ) {
     class Success<T>(data: T?): ProgressResource<T>(data)
     class Error<T>(message: String, data: T? = null): ProgressResource<T>(data, message)
-    class Progress<T>(percentage: Int?, data: T? = null, message: String? = null): ProgressResource<T>(percentage = percentage)
+    class Progress<T>(percentage: Int?): ProgressResource<T>(percentage = percentage)
 }

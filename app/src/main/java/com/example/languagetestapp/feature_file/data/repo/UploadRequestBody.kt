@@ -14,7 +14,8 @@ import java.io.FileInputStream
 class UploadRequestBody(
     private val file: File,
     private val contentType: String,
-    private val progressCallback: UploadProgressCallback //todo replace with lambda
+//    private val progressCallback: UploadProgressCallback //todo replace with lambda
+    private val onProgressChanged: (Int) -> Unit
 ): RequestBody() {
 
     override fun contentType(): MediaType? = "$contentType/*".toMediaTypeOrNull()
@@ -50,13 +51,13 @@ class UploadRequestBody(
     ): Runnable {
 
         override fun run() {
-            progressCallback.onProgressChanged((100 * uploadedLength / totalLength).toInt())
+            /*progressCallback.*/onProgressChanged((100 * uploadedLength / totalLength).toInt())
         }
     }
 
-    interface UploadProgressCallback {
-        fun onProgressChanged(percentage: Int)
-    }
+//    interface UploadProgressCallback {
+//        fun onProgressChanged(percentage: Int)
+//    }
 
     companion object {
         const val DEFAULT_DUFFER_SIZE = 1024

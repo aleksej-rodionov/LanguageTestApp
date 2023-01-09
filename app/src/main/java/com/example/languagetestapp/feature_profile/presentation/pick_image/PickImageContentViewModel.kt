@@ -5,10 +5,18 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
+import com.example.languagetestapp.feature_file.domain.repo.ProgressResource
 import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,6 +25,7 @@ class PickImageContentViewModel @Inject constructor(
 ): ViewModel() {
 
     val state = mutableStateOf(State())
+
 
     fun onImageSelected(uri: Uri) = viewModelScope.launch {
 
@@ -27,11 +36,43 @@ class PickImageContentViewModel @Inject constructor(
 
             Log.d(TAG_FILE, "Internal File = $it")
             // upload
-            val result = fileRepo.startUploadingImage(it)
-            result.data?.let {
-                Log.d(TAG_FILE, "Upload Result = ${it}")
-            } ?: run {
-                Log.d(TAG_FILE, "Upload Result = ${result.message ?: "Unknown error"}")
+            executeUploadingBytes(it)
+        }
+    }
+
+    var bytesUploadingJob: Job? = null
+    private fun executeUploadingBytes(imageFile: File) {
+        bytesUploadingJob?.cancel()
+        bytesUploadingJob = viewModelScope.launch(Dispatchers.IO) {
+            fileRepo.executeUploadingBytes(imageFile).onEach { progressResource ->
+                when (progressResource) {
+                    is ProgressResource.Progress -> {
+                        Log.d(TAG_FILE, "executeUploadingBytes: Progress = ${progressResource.percentage ?: "NULL"}")
+                    }
+                    is ProgressResource.Error -> {
+                        Log.d(TAG_FILE, "executeUploadingBytes: Error = ${progressResource.message ?: "Unknown error"}")
+                    }
+                    is ProgressResource.Success -> {
+                        Log.d(TAG_FILE, "executeUploadingBytes: Success = ${progressResource.data ?: "Success but no data"}")
+                        progressResource.data?.let { part ->
+                            uploadFinalBodyPart(part)
+                        }
+                    }
+                }
+            }.launchIn(this)
+        }
+    }
+
+    private fun uploadFinalBodyPart(part: MultipartBody.Part) = viewModelScope.launch(Dispatchers.IO) {
+        val result = fileRepo.postFile(part)
+        when (result) {
+            is Resource.Success -> {
+                Log.d(TAG_FILE, "uploadFinalBodyPart: Success = ${result.data ?: "NULL"}")
+//                state = state.copy(text = result.data?.text ?: "", isLoading = false)
+            }
+            is Resource.Error -> {
+                Log.d(TAG_FILE, "uploadFinalBodyPart: Error = ${result.message ?: "Unknown error"}")
+//                state = state.copy(text = "", isLoading = false)
             }
         }
     }
