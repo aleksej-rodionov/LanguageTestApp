@@ -2,13 +2,22 @@ package com.example.languagetestapp.feature_file.data.repo
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
+import com.example.languagetestapp.core.di.ApplicationScope
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_file.data.remote.FileApi
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
+import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
 import com.example.languagetestapp.feature_file.util.getFileName
 import com.example.languagetestapp.feature_profile.presentation.util.FileManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import java.io.File
 import java.io.FileInputStream
@@ -16,8 +25,9 @@ import java.io.FileOutputStream
 
 class FileRepository(
     private val fileApi: FileApi,
-    val context: Context
-) : FileRepo {
+    val context: Context,
+    val scope: CoroutineScope
+) : FileRepo, UploadRequestBody.UploadProgressCallback {
 
     override fun prepareFileFromInternalStorage(fileUri: Uri?): MultipartBody.Part? {
         TODO("Not yet implemented")
@@ -43,7 +53,10 @@ class FileRepository(
     override fun copyFileFromExternal(externalUri: Uri): Resource<File> {
         val parcelFileDescriptor = context.contentResolver.openFileDescriptor(
             externalUri, "r", null
-        ) ?: return Resource.Error("ParcelFileDescriptor is NULL")
+        ) ?: run {
+            Log.d(TAG_FILE, "ParcelFileDescriptor is NULL")
+            return Resource.Error("ParcelFileDescriptor is NULL")
+        }
 
         val inputStream = FileInputStream(parcelFileDescriptor.fileDescriptor)
         val newFile = File(
@@ -51,8 +64,33 @@ class FileRepository(
             context.contentResolver.getFileName(externalUri)
         )
         val outputStream = FileOutputStream(newFile)
+
+        //todo do I need to launch this below in Coroutine and wait for completion?
         inputStream.copyTo(outputStream)
+        Log.d(TAG_FILE, "copyFileFromExternal: Success. File = $newFile")
         return Resource.Success(newFile)
+    }
+
+    override suspend fun startUploadingImage(imageFile: File): Resource<String> {
+
+        var loadingPercentage = 0
+        Log.d(TAG_FILE, "uploadingImage: ${loadingPercentage}%")
+
+        val body = UploadRequestBody(
+            imageFile,
+            "image",
+            this
+        )
+
+        val resp = postFile(
+            MultipartBody.Part.createFormData("image", imageFile.name, body),
+//            RequestBody.create(MediaType.parse("multipart/form-data"), "Image from device")
+        )
+        return (resp)
+    }
+
+    override fun onProgressChanged(percentage: Int) {
+        Log.d(TAG_FILE, "onProgressChanged: ${percentage}%")
     }
 
     //====================PRIVATE METHODS====================

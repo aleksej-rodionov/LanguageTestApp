@@ -1,10 +1,12 @@
 package com.example.languagetestapp.feature_profile.presentation.pick_image
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
+import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,10 +21,15 @@ class PickImageContentViewModel @Inject constructor(
     fun onImageSelected(uri: Uri) = viewModelScope.launch {
 
         //todo copy external file to app-specific storage
-        val internalUri = fileRepo.copyFileFromExternal(uri)
+        val internalUriResult = fileRepo.copyFileFromExternal(uri)
 
-        //todo upload
+        internalUriResult.data?.let {
 
+            Log.d(TAG_FILE, "Internal File = $it")
+            //todo upload
+            val result = fileRepo.startUploadingImage(it)
+            Log.d(TAG_FILE, "Upload Result = ${result}")
+        }
     }
 
 

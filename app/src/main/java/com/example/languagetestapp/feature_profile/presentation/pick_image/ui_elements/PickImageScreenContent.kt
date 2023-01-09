@@ -26,7 +26,7 @@ fun PickImageScreenContent(
                 Log.d(TAG_FILE, "Picked image external url = $it")
                 //todo prepare to upload. Note that it is external uri?
 
-                viewModel
+                viewModel.onImageSelected(it)
             }
         }
     )

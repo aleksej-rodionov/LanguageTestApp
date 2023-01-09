@@ -2,6 +2,7 @@ package com.example.languagetestapp.feature_file.domain.repo
 
 import android.net.Uri
 import com.example.languagetestapp.core.util.Resource
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import java.io.File
@@ -13,4 +14,6 @@ interface FileRepo {
     suspend fun postFile(requestBodyFile: MultipartBody.Part): Resource<String>
 
     fun copyFileFromExternal(externalUri: Uri): Resource<File>
+
+    suspend fun startUploadingImage(imageFile: File): Resource<String>
 }
