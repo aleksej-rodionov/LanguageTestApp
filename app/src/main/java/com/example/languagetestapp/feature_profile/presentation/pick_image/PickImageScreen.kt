@@ -2,6 +2,8 @@ package com.example.languagetestapp.feature_profile.presentation.pick_image
 
 import android.Manifest
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
@@ -28,7 +30,6 @@ fun PickImageScreen(
     viewModel: PickImageViewModel = hiltViewModel()
 ) {
 
-
     val state = viewModel.state
 
     val permissions = remember { listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE) }
@@ -50,7 +51,7 @@ fun PickImageScreen(
         }
     })
 
-    //    CompositionLocalProvider("pizda") {
+//    CompositionLocalProvider("pizda") {
 
     val allPermissionsGranted =
         state.multiplePermissionsState?.allPermissionsGranted ?: false

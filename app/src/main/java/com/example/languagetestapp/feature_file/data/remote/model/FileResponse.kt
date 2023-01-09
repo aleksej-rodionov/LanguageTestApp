@@ -1,8 +1,8 @@
-package com.example.languagetestapp.feature_auth.data.remote.model
+package com.example.languagetestapp.feature_file.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 
-data class AuthResponse<T>( // todo create 1 universal class
+data class FileResponse<T>(
     @SerializedName("status")
     val status: String,
     @SerializedName("body")
@@ -10,3 +10,4 @@ data class AuthResponse<T>( // todo create 1 universal class
     @SerializedName("error")
     val error: String?
 )
+

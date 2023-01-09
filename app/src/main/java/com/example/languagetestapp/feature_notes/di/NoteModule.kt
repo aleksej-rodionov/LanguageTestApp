@@ -11,18 +11,17 @@ import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 import com.example.languagetestapp.feature_auth.util.countExp
 import com.example.languagetestapp.feature_notes.data.remote.LanguageNoteApi
 import com.example.languagetestapp.feature_notes.data.repo.NoteRepoImpl
-import com.example.languagetestapp.feature_notes.data.repo.NoteEventRepoImpl
+import com.example.languagetestapp.feature_notes.data.repo.NoteStatefulRepoImpl
 import com.example.languagetestapp.feature_notes.di.NoteModule.AUTHORIZATION
 import com.example.languagetestapp.feature_notes.di.NoteModule.BEARER
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
-import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
+import com.example.languagetestapp.feature_notes.domain.repo.NoteStatefulRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -132,8 +131,8 @@ object NoteModule {
 
     @Provides
     @Singleton
-    fun provideStatefulNoteRepo(@NoteScope noteScope: CoroutineScope): NoteEventRepo {
-        return NoteEventRepoImpl(noteScope)
+    fun provideStatefulNoteRepo(@NoteScope noteScope: CoroutineScope): NoteStatefulRepo {
+        return NoteStatefulRepoImpl(noteScope)
     }
 
 

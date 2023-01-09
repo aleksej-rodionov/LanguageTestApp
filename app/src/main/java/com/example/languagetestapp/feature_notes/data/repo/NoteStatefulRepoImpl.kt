@@ -1,16 +1,16 @@
 package com.example.languagetestapp.feature_notes.data.repo
 
 import com.example.languagetestapp.feature_notes.domain.model.Note
-import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
+import com.example.languagetestapp.feature_notes.domain.repo.NoteStatefulRepo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class NoteEventRepoImpl (
+class NoteStatefulRepoImpl (
     private val noteScope: CoroutineScope
-): NoteEventRepo {
+): NoteStatefulRepo {
 
     private val _noteCreated = MutableSharedFlow<Note>()
     override val noteCreated: SharedFlow<Note> = _noteCreated.asSharedFlow()

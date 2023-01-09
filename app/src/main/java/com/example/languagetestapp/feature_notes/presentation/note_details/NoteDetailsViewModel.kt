@@ -1,6 +1,5 @@
 package com.example.languagetestapp.feature_notes.presentation.note_details
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,13 +10,10 @@ import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_notes.di.NoteScope
 import com.example.languagetestapp.feature_notes.domain.model.Note
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
-import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
-import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
+import com.example.languagetestapp.feature_notes.domain.repo.NoteStatefulRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteDetailsViewModel @Inject constructor(
     private val noteRepo: NoteRepo,
-    private val noteEventRepo: NoteEventRepo,
+    private val noteStatefulRepo: NoteStatefulRepo,
     @NoteScope private val noteScope: CoroutineScope,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -102,8 +98,8 @@ class NoteDetailsViewModel @Inject constructor(
         when (resp) {
             is Resource.Success -> {
                 state = state.copy(isLoading = false)
-                if (createdNew) noteEventRepo.onNoteCreated(resp.data)
-                    else noteEventRepo.onNoteUpdated(resp.data)
+                if (createdNew) noteStatefulRepo.onNoteCreated(resp.data)
+                    else noteStatefulRepo.onNoteUpdated(resp.data)
                 _uiEvent.send(NoteDetailsUiEvent.SnackbarMsg(
                     "Note successfully ${if (createdNew) "created" else "updated"}"
                 ))

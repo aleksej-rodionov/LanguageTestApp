@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
 // todo can I make it a reusable interface?
-interface NoteEventRepo {
+interface NoteStatefulRepo {
 
     val noteCreated: SharedFlow<Note>
 

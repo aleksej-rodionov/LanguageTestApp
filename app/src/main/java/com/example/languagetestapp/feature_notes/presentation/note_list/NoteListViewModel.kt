@@ -8,9 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_notes.domain.model.Note
-import com.example.languagetestapp.feature_notes.domain.repo.NoteEventRepo
+import com.example.languagetestapp.feature_notes.domain.repo.NoteStatefulRepo
 import com.example.languagetestapp.feature_notes.domain.repo.NoteRepo
-import com.example.languagetestapp.feature_notes.presentation.NoteActivityAction
 import com.example.languagetestapp.feature_notes.presentation.util.NoteDest
 import com.example.languagetestapp.feature_notes.util.Constants.TAG_NOTE
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteListViewModel @Inject constructor(
     private val noteRepo: NoteRepo,
-    private val noteEventRepo: NoteEventRepo
+    private val noteStatefulRepo: NoteStatefulRepo
 ) : ViewModel() {
 
     var state by mutableStateOf(NoteListState())
@@ -123,21 +122,21 @@ class NoteListViewModel @Inject constructor(
 
     private fun subscribeToNoteEvents() {
         viewModelScope.launch {
-            noteEventRepo.noteCreated.collect {
+            noteStatefulRepo.noteCreated.collect {
                 Log.d(TAG_NOTE, "noteCreated: $it")
                 state = state.copy(notes = listWithNewNote(it))
             }
         }
 
         viewModelScope.launch {
-            noteEventRepo.noteUpdated.collect {
+            noteStatefulRepo.noteUpdated.collect {
                 Log.d(TAG_NOTE, "noteUpdated: $it")
                 state = state.copy(notes = listWithNoteChanges(it))
             }
         }
 
         viewModelScope.launch {
-            noteEventRepo.noteDeleted.collect {
+            noteStatefulRepo.noteDeleted.collect {
                 Log.d(TAG_NOTE, "noteDeleted: $it")
                 state = state.copy(notes = listWithoutDeletedNote(it))
             }
@@ -168,7 +167,7 @@ class NoteListViewModel @Inject constructor(
     private fun deleteNote(note: Note) = viewModelScope.launch {
         when (val resp = noteRepo.deleteNote(note._id)) {
             is Resource.Success -> {
-                noteEventRepo.onNoteDeleted(resp.data)
+                noteStatefulRepo.onNoteDeleted(resp.data)
 
                 // todo add UNDO btn to the snackbar below
                 _uiEvent.send(

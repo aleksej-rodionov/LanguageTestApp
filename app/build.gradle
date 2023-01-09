@@ -127,4 +127,7 @@ dependencies {
     // Datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
+    // Coil for Images
+    implementation("io.coil-kt:coil:2.2.2")
+
 }

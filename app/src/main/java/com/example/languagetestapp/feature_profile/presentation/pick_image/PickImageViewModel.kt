@@ -21,7 +21,6 @@ import javax.inject.Inject
 @OptIn(ExperimentalPermissionsApi::class)
 @HiltViewModel
 class PickImageViewModel @Inject constructor(
-    private val fileManager: FileManager,
     val permissionsHandler: PermissionHandler
 ) : ViewModel() {
 
