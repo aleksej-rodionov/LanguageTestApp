@@ -4,6 +4,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -14,7 +16,6 @@ import java.io.FileInputStream
 class UploadRequestBody(
     private val file: File,
     private val contentType: String,
-//    private val progressCallback: UploadProgressCallback //todo replace with lambda
     private val onProgressChanged: (Int) -> Unit
 ): RequestBody() {
 
@@ -51,7 +52,10 @@ class UploadRequestBody(
     ): Runnable {
 
         override fun run() {
-            /*progressCallback.*/onProgressChanged((100 * uploadedLength / totalLength).toInt())
+            /*progressCallback.*/
+//            scope.launch {
+                onProgressChanged((100 * uploadedLength / totalLength).toInt())
+//            }
         }
     }
 

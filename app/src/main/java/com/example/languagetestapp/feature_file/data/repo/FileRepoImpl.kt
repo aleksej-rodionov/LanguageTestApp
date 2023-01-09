@@ -3,11 +3,13 @@ package com.example.languagetestapp.feature_file.data.repo
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.webkit.MimeTypeMap
 import androidx.activity.result.ActivityResultLauncher
 import com.example.languagetestapp.core.di.ApplicationScope
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_file.data.remote.FileApi
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
+import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
 import com.example.languagetestapp.feature_file.domain.repo.ProgressResource
 import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
 import com.example.languagetestapp.feature_file.util.getFileName
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -25,11 +28,11 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class FileRepository(
+class FileRepoImpl(
     private val fileApi: FileApi,
     val context: Context,
-    val scope: CoroutineScope
-) : FileRepo/*, UploadRequestBody.UploadProgressCallback */{
+    val fileStatefulRepo: FileStatefulRepo
+) : FileRepo/*, UploadRequestBody.UploadProgressCallback */ {
 
     override fun prepareFileFromInternalStorage(fileUri: Uri?): MultipartBody.Part? {
         TODO("Not yet implemented")
@@ -73,39 +76,34 @@ class FileRepository(
         return Resource.Success(newFile)
     }
 
-    override fun executeUploadingBytes(imageFile: File): Flow<ProgressResource<MultipartBody.Part>> = flow {
+    override fun executeUploadingBytes(imageFile: File):
+            Flow<ProgressResource<MultipartBody.Part>> = flow {
 
         var loadingPercentage = 0
-//        Log.d(TAG_FILE, "uploadingImage: ${loadingPercentage}%")
         emit(ProgressResource.Progress(loadingPercentage))
 
-        scope.launch {
-            val body = UploadRequestBody(
-                imageFile,
-                "image",
-//            this
-                {
-                    Log.d(TAG_FILE, "CALLBACK: percentage = $it")
-                   this.launch {
-                       Log.d(TAG_FILE, "CALLBACK IN SCOPE: percentage = $it")
-                       emit(ProgressResource.Progress<MultipartBody.Part>(it))
-                   }
-                }
-            )
+        val body = UploadRequestBody(
+            file = imageFile,
+            contentType = "image",
+            onProgressChanged = {
+//                emit(ProgressResource.Progress<MultipartBody.Part>(it))
+                fileStatefulRepo.onProgressUpdated(it)
+            }
+        )
 
-            val part = MultipartBody.Part.createFormData("image", imageFile.name, body)
-            val result = ProgressResource.Success(part)
-            emit(result)
-        }
-
-//            RequestBody.create(MediaType.parse("multipart/form-data"), "Image from device")
-
+        val part = MultipartBody.Part.createFormData("image", imageFile.name, body)
+        val result = ProgressResource.Success(part)
+        emit(result)
     }
 
-//    override fun onProgressChanged(percentage: Int) {
-//        Log.d(TAG_FILE, "onProgressChanged: ${percentage}%")
-//    }
+
 
     //====================PRIVATE METHODS====================
-
+    fun File.getMimeType(fallback: String = "image/*"): String {
+        return MimeTypeMap.getFileExtensionFromUrl(toString())
+            ?.run {
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(toLowerCase())
+            }
+            ?: fallback
+    }
 }

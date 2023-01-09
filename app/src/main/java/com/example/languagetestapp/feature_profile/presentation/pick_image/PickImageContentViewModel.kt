@@ -2,16 +2,20 @@ package com.example.languagetestapp.feature_profile.presentation.pick_image
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
+import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
 import com.example.languagetestapp.feature_file.domain.repo.ProgressResource
 import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -21,10 +25,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PickImageContentViewModel @Inject constructor(
-    private val fileRepo: FileRepo
+    private val fileRepo: FileRepo,
+    private val fileStatefulRepo: FileStatefulRepo
 ): ViewModel() {
 
-    val state = mutableStateOf(State())
+    var state by mutableStateOf(State())
+
+    init {
+        viewModelScope.launch {
+            fileStatefulRepo.progressUpdated.collectLatest {
+                state = state.copy(uploadPercentage = it)
+            }
+        }
+    }
 
 
     fun onImageSelected(uri: Uri) = viewModelScope.launch {
@@ -68,11 +81,11 @@ class PickImageContentViewModel @Inject constructor(
         when (result) {
             is Resource.Success -> {
                 Log.d(TAG_FILE, "uploadFinalBodyPart: Success = ${result.data ?: "NULL"}")
-//                state = state.copy(text = result.data?.text ?: "", isLoading = false)
+                state = state.copy(remoteUrl = result.data ?: "Success but no data")
             }
             is Resource.Error -> {
                 Log.d(TAG_FILE, "uploadFinalBodyPart: Error = ${result.message ?: "Unknown error"}")
-//                state = state.copy(text = "", isLoading = false)
+                state = state.copy(remoteUrl = "Show snackbar = " + result.message ?: "Show snackbar")
             }
         }
     }
@@ -82,7 +95,8 @@ class PickImageContentViewModel @Inject constructor(
 
     //====================STATE AND EVENT====================
     data class State(
-        val uploadPercentage: Int? = null
+        val uploadPercentage: Int? = null,
+        val remoteUrl: String? = null
     )
 
     sealed class Event { //todo use later instead direct callbacks

@@ -5,13 +5,16 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.languagetestapp.BuildConfig
 import com.example.languagetestapp.core.di.ApplicationScope
 import com.example.languagetestapp.feature_file.data.remote.FileApi
-import com.example.languagetestapp.feature_file.data.repo.FileRepository
+import com.example.languagetestapp.feature_file.data.repo.FileRepoImpl
+import com.example.languagetestapp.feature_file.data.repo.FileStatefulRepoImpl
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
+import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -59,8 +62,20 @@ object FileModule {
     fun provideFileRepo(
         fileApi: FileApi,
         context: Application,
-        @ApplicationScope scope: CoroutineScope
-    ): FileRepo = FileRepository(fileApi, context, scope)
+        fileStatefulRepo: FileStatefulRepo
+    ): FileRepo = FileRepoImpl(fileApi, context, fileStatefulRepo)
+
+    @Provides
+    @Singleton
+    @FileScope
+    fun provideNoteScope() = CoroutineScope(SupervisorJob())
+
+    @Provides
+    @Singleton
+    fun provideStatefulNoteRepo(@FileScope fileScope: CoroutineScope): FileStatefulRepo {
+        return FileStatefulRepoImpl(fileScope)
+    }
+
 
 
 
