@@ -20,15 +20,19 @@ class PickImageContentViewModel @Inject constructor(
 
     fun onImageSelected(uri: Uri) = viewModelScope.launch {
 
-        //todo copy external file to app-specific storage
+        // copy external file to app-specific storage
         val internalUriResult = fileRepo.copyFileFromExternal(uri)
 
         internalUriResult.data?.let {
 
             Log.d(TAG_FILE, "Internal File = $it")
-            //todo upload
+            // upload
             val result = fileRepo.startUploadingImage(it)
-            Log.d(TAG_FILE, "Upload Result = ${result}")
+            result.data?.let {
+                Log.d(TAG_FILE, "Upload Result = ${it}")
+            } ?: run {
+                Log.d(TAG_FILE, "Upload Result = ${result.message ?: "Unknown error"}")
+            }
         }
     }
 

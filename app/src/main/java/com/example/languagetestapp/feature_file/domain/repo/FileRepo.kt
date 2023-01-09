@@ -17,3 +17,17 @@ interface FileRepo {
 
     suspend fun startUploadingImage(imageFile: File): Resource<String>
 }
+
+
+
+
+//todo move somewhere
+sealed class ProgressResource<T>(
+    val data: T? = null,
+    val message: String? = null,
+    val percentage: Int? = null
+) {
+    class Success<T>(data: T?): ProgressResource<T>(data)
+    class Error<T>(message: String, data: T? = null): ProgressResource<T>(data, message)
+    class Progress<T>(percentage: Int?, data: T? = null, message: String? = null): ProgressResource<T>(percentage = percentage)
+}
