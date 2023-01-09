@@ -9,13 +9,11 @@ import java.io.File
 
 interface FileRepo {
 
-    fun prepareFileFromInternalStorage(fileUri: Uri?): MultipartBody.Part?
-
     suspend fun postFile(requestBodyFile: MultipartBody.Part): Resource<String>
 
     fun copyFileFromExternal(externalUri: Uri): Resource<File>
 
-    fun executeUploadingBytes(imageFile: File): Flow<ProgressResource<MultipartBody.Part>>
+    suspend fun prepareFileFromInternalStorage(imageFile: File): Resource<MultipartBody.Part>
 }
 
 

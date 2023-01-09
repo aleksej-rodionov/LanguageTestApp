@@ -32,11 +32,7 @@ class FileRepoImpl(
     private val fileApi: FileApi,
     val context: Context,
     val fileStatefulRepo: FileStatefulRepo
-) : FileRepo/*, UploadRequestBody.UploadProgressCallback */ {
-
-    override fun prepareFileFromInternalStorage(fileUri: Uri?): MultipartBody.Part? {
-        TODO("Not yet implemented")
-    }
+) : FileRepo {
 
     override suspend fun postFile(requestBodyFile: MultipartBody.Part): Resource<String> {
         try {
@@ -76,34 +72,24 @@ class FileRepoImpl(
         return Resource.Success(newFile)
     }
 
-    override fun executeUploadingBytes(imageFile: File):
-            Flow<ProgressResource<MultipartBody.Part>> = flow {
+    override suspend fun prepareFileFromInternalStorage(imageFile: File):
+            Resource<MultipartBody.Part> {
 
-        var loadingPercentage = 0
-        emit(ProgressResource.Progress(loadingPercentage))
-
+        fileStatefulRepo.onProgressUpdated(0)
         val body = UploadRequestBody(
             file = imageFile,
             contentType = "image",
             onProgressChanged = {
-//                emit(ProgressResource.Progress<MultipartBody.Part>(it))
                 fileStatefulRepo.onProgressUpdated(it)
             }
         )
 
         val part = MultipartBody.Part.createFormData("image", imageFile.name, body)
-        val result = ProgressResource.Success(part)
-        emit(result)
+        val result = Resource.Success(part)
+        return result
     }
 
 
 
     //====================PRIVATE METHODS====================
-    fun File.getMimeType(fallback: String = "image/*"): String {
-        return MimeTypeMap.getFileExtensionFromUrl(toString())
-            ?.run {
-                MimeTypeMap.getSingleton().getMimeTypeFromExtension(toLowerCase())
-            }
-            ?: fallback
-    }
 }
