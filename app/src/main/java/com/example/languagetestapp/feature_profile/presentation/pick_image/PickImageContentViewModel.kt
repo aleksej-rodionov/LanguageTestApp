@@ -1,7 +1,6 @@
 package com.example.languagetestapp.feature_profile.presentation.pick_image
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,9 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
-import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -36,6 +35,7 @@ class PickImageContentViewModel @Inject constructor(
     }
 
 
+
     fun onImageSelected(uri: Uri) = viewModelScope.launch {
         val internalUriResult = fileRepo.copyFileFromExternal(uri) // copy external file to app-specific storage
         internalUriResult.data?.let { executeUploadingBytes(it) } // prepare multipart body
@@ -55,10 +55,11 @@ class PickImageContentViewModel @Inject constructor(
         val result = fileRepo.postFile(part)
         when (result) {
             is Resource.Success -> {
-                state = state.copy(remoteUrl = result.data ?: "Success but no data")
+//                state = state.copy(remoteImageUrl = result.data ?: "Success but no data")
+                state = state.copy(remoteImageUrl = "http://i1.wallbox.ru/wallpapers/main2/202028/15944759085f09c584aadc87.43708441.jpg") // for testing
             }
             is Resource.Error -> {
-                state = state.copy(remoteUrl = "Show snackbar = " + result.message ?: "Show snackbar")
+                state = state.copy(remoteImageUrl = "Show snackbar = " + result.message ?: "Show snackbar")
             }
         }
     }
@@ -69,7 +70,7 @@ class PickImageContentViewModel @Inject constructor(
     //====================STATE AND EVENT====================
     data class State(
         val uploadPercentage: Int? = null,
-        val remoteUrl: String? = null
+        val remoteImageUrl: String? = null
     )
 
     sealed class Event { //todo use later instead direct callbacks

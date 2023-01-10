@@ -64,7 +64,6 @@ fun ProfileDetail(
                 .clip(CircleShape)
                 .border(
                     width = 2.dp,
-//                    color = properties.value.color("background"),
                     color = Color.White,
                     shape = CircleShape
                 )

@@ -128,6 +128,10 @@ dependencies {
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     // Coil for Images
-    implementation("io.coil-kt:coil:2.2.2")
+    implementation "io.coil-kt:coil-compose:2.1.0"
 
+
+    // glide
+    implementation "com.github.bumptech.glide:glide:4.14.2"
+    kapt "com.github.bumptech.glide:compiler:4.14.2"
 }
