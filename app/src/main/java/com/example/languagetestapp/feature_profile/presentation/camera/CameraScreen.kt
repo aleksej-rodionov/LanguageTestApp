@@ -28,7 +28,6 @@ fun CameraScreen(
 
 
     val state = cameraViewModel.state
-    val scope = rememberCoroutineScope()
 
     val permissions = remember { listOf(Manifest.permission.CAMERA) }
     HandlePermissionsRequest(
@@ -48,14 +47,8 @@ fun CameraScreen(
 
 //    CompositionLocalProvider("pizda") {
 
-//    CameraScreenContent(
-//        allPermissionsGranted = state.multiplePermissionsState?.allPermissionsGranted ?: false,
-//        onEvent = cameraViewModel::onEvent
-//    )
-
-    val allPermissionsGranted = //todo при возвращении перепроверять это говно (аналог onResume)
+    val allPermissionsGranted =
         state.multiplePermissionsState?.allPermissionsGranted ?: false
-    // todo trigger it in VM??
 
     Log.d("TAG_PERMIT_ACT_REQ", "CameraScreen: allPermissionsGranted = $allPermissionsGranted")
 

@@ -70,7 +70,8 @@ class PickImageContentViewModel @Inject constructor(
     //====================STATE AND EVENT====================
     data class State(
         val uploadPercentage: Int? = null,
-        val remoteImageUrl: String? = null
+        val remoteImageUrl: String? = null,
+        val hasImage: Boolean = false
     )
 
     sealed class Event { //todo use later instead direct callbacks

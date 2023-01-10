@@ -32,6 +32,7 @@ fun PickImageScreenContent(
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
+            viewModel.state = viewModel.state.copy(hasImage = uri != null) // todo pass through onEvent()
             uri?.let {
                 viewModel.onImageSelected(it)
             }
@@ -46,16 +47,31 @@ fun PickImageScreenContent(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AsyncImage(
-                model = state.remoteImageUrl,
-                contentDescription = null,
-                error = painterResource(R.drawable.ava_placeholder),
-                modifier = Modifier
-                    .width(250.dp)
-                    .height(250.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+
+            // todo if(hasImage) check
+            if (state.hasImage && state.remoteImageUrl?.isNotEmpty() == true) {
+                AsyncImage(
+                    model = state.remoteImageUrl,
+                    contentDescription = null,
+                    error = painterResource(R.drawable.ava_placeholder),
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(250.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.ava_placeholder),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(250.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
             Text(text = if (state.remoteImageUrl.isNullOrBlank()) {
                 state.uploadPercentage?.let { "$it%" } ?: ""
             } else "")

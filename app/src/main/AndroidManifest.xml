@@ -40,6 +40,17 @@
             android:theme="@style/Theme.LanguageTestApp">
 
         </activity>
+        
+        
+        <provider
+            android:authorities="com.example.languagetestapp.fileprovider"
+            android:name=".feature_file.util.CustomFileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>
