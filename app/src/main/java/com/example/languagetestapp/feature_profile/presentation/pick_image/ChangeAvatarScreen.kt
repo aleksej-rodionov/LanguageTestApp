@@ -1,6 +1,8 @@
 package com.example.languagetestapp.feature_profile.presentation.pick_image
 
 import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.languagetestapp.core.util.permission.HandlePermissionsRequest
 import com.example.languagetestapp.feature_profile.presentation.pick_image.ui_elements.ChangeAvatarContent
+import com.example.languagetestapp.feature_profile.presentation.pick_image.ui_elements.ChangeAvatarContentViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -19,6 +22,24 @@ fun ChangeAvatarScreen(
 ) {
 
     val state = viewModel.state
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+                viewModel.onEvent(ChangeAvatarViewModel.Event.OnImageSelected(it))
+            }
+        }
+    )
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { isSuccess ->
+            if (isSuccess) {
+                viewModel.onEvent(ChangeAvatarViewModel.Event.OnCameraSuccess)
+            }
+        }
+    )
 
     val permissions = remember {
         //todo replace with sealed class
@@ -35,8 +56,6 @@ fun ChangeAvatarScreen(
         }
     }
 
-
-
     HandlePermissionsRequest(
         permissions = permissions,
         permissionHandler = viewModel.permissionsHandler
@@ -51,6 +70,13 @@ fun ChangeAvatarScreen(
                 is ChangeAvatarViewModel.UiEffect.SnackbarMsg -> {
                     showSnackbar(effect.msg, SnackbarDuration.Short)
                 }
+
+                is ChangeAvatarViewModel.UiEffect.LaunchPicker -> {
+                    imagePicker.launch("image/*")
+                }
+                is ChangeAvatarViewModel.UiEffect.LaunchCameraWithUri -> {
+                    cameraLauncher.launch(effect.uri)
+                }
             }
         }
     })
@@ -63,10 +89,17 @@ fun ChangeAvatarScreen(
     if (!allPermissionsGranted) {
         viewModel.onEvent(ChangeAvatarViewModel.Event.PermissionRequired)
     } else {
-        ChangeAvatarContent(
-            state.imageSourceChosen,
-            showSnackbar
-        )
+        with(state) {
+            ChangeAvatarContent(
+                imageSourceChosen,
+                uploadPercentage,
+                localImageUri,
+                remoteImageUrl,
+                hasImage,
+                { viewModel.onEvent(ChangeAvatarViewModel.Event.Submit) }
+//                showSnackbar
+            )
+        }
     }
 
 //    }

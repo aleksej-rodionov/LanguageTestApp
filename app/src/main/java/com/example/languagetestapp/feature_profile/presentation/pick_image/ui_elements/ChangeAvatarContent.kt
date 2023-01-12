@@ -27,58 +27,50 @@ import com.example.languagetestapp.feature_profile.presentation.pick_image.IMAGE
 @Composable
 fun ChangeAvatarContent(
     imageSource: String,
-    showSnackbar: (String, SnackbarDuration) -> Unit,
+    uploadPercentage: Int? = null,
+    localImageUri: String? = null,
+    remoteImageUrl: String? = null,
+    hasImage: Boolean = false,
+    onSubmitClick: () -> Unit,
+//    showSnackbar: (String, SnackbarDuration) -> Unit,
     viewModel: ChangeAvatarContentViewModel = hiltViewModel()
 ) {
 
-    val context = LocalContext.current
-    val state = viewModel.state
+//    val state = viewModel.state
 
-    val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            uri?.let {
-                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnImageSelected(it))
-            }
-        }
-    )
+//    val imagePicker = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent(),
+//        onResult = { uri ->
+//            uri?.let {
+//                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnImageSelected(it))
+//            }
+//        }
+//    )
+//
+//    val cameraLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.TakePicture(),
+//        onResult = { isSuccess ->
+//            if (isSuccess) {
+//                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnCameraSuccess)
+//            }
+//        }
+//    )
 
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = { isSuccess ->
-            if (isSuccess) {
-                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnCameraSuccess)
-            }
-        }
-    )
-
-    when (imageSource) {
-        IMAGE_SOURCE_FILEPICKER -> {
-            viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchImagePicker)
-        }
-        IMAGE_SOURCE_CAMERA -> {
-            viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchCamera)
-        }
-        else -> { // todo get rid of it by using sealed
-            viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchImagePicker)
-        }
-    }
-
-    LaunchedEffect(key1 = true, block = {
-        viewModel.uiEffect.collect { effect ->
-            when (effect) {
-                is ChangeAvatarContentViewModel.UiEffect.SnackbarMsg -> {
-                    showSnackbar(effect.msg, SnackbarDuration.Short)
-                }
-                is ChangeAvatarContentViewModel.UiEffect.LaunchPicker -> {
-                    imagePicker.launch("image/*")
-                }
-                is ChangeAvatarContentViewModel.UiEffect.LaunchCameraWithUri -> {
-                    cameraLauncher.launch(effect.uri)
-                }
-            }
-        }
-    })
+//    LaunchedEffect(key1 = true, block = {
+//        viewModel.uiEffect.collect { effect ->
+//            when (effect) {
+//                is ChangeAvatarContentViewModel.UiEffect.SnackbarMsg -> {
+//                    showSnackbar(effect.msg, SnackbarDuration.Short)
+//                }
+//                is ChangeAvatarContentViewModel.UiEffect.LaunchPicker -> {
+//                    imagePicker.launch("image/*")
+//                }
+//                is ChangeAvatarContentViewModel.UiEffect.LaunchCameraWithUri -> {
+//                    cameraLauncher.launch(effect.uri)
+//                }
+//            }
+//        }
+//    })
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -89,9 +81,9 @@ fun ChangeAvatarContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (state.hasImage && state.remoteImageUrl?.isNotEmpty() == true) {
+            if (hasImage && remoteImageUrl?.isNotEmpty() == true) {
                 AsyncImage(
-                    model = state.remoteImageUrl,
+                    model = remoteImageUrl,
                     contentDescription = null,
                     error = painterResource(R.drawable.ava_placeholder),
                     modifier = Modifier
@@ -113,13 +105,13 @@ fun ChangeAvatarContent(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = ("localImgUri = " + state.localImageUri?.let { "$it" }) ?: "empty")
+            Text(text = ("localImgUri = " + localImageUri?.let { "$it" }) ?: "empty")
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = if (state.remoteImageUrl.isNullOrBlank()) {
-                state.uploadPercentage?.let { "$it%" } ?: ""
+            Text(text = if (remoteImageUrl.isNullOrBlank()) {
+                uploadPercentage?.let { "$it%" } ?: ""
             } else "")
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = ("remoteImgUri = " + state.remoteImageUrl?.let { "$it" }) ?: "empty")
+            Text(text = ("remoteImgUri = " + remoteImageUrl?.let { "$it" }) ?: "empty")
             Spacer(modifier = Modifier.height(16.dp))
 //            Button(
 //                onClick = {
@@ -145,7 +137,8 @@ fun ChangeAvatarContent(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    viewModel.onEvent(ChangeAvatarContentViewModel.Event.Submit)
+//                    viewModel.onEvent(ChangeAvatarContentViewModel.Event.Submit)
+                    onSubmitClick()
                 }
             ) {
                 Text(text = "Save")
