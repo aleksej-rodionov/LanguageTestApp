@@ -34,7 +34,8 @@ fun ChangeAvatarContent(
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
-            viewModel.state = viewModel.state.copy(hasImage = uri != null) // todo pass through onEvent()
+            // todo pass through onEvent()
+            viewModel.state = viewModel.state.copy(hasImage = uri != null)
             uri?.let {
                 viewModel.onImageSelected(it)
             }
@@ -50,6 +51,22 @@ fun ChangeAvatarContent(
         }
     )
 
+    when (imageSource) {
+        IMAGE_SOURCE_FILEPICKER -> {
+            imagePicker.launch("image/*")
+        }
+        IMAGE_SOURCE_CAMERA -> {
+            // todo pass through onEvent()
+            val uri = CustomFileProvider.getImageUri(context)
+            viewModel.state = viewModel.state.copy(hasImage = false) //todo remove?
+            viewModel.state = viewModel.state.copy(localImageUri = uri.toString())
+            cameraLauncher.launch(uri)
+        }
+        else -> { // todo get rid of it by using sealed
+            imagePicker.launch("image/*")
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -59,7 +76,6 @@ fun ChangeAvatarContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // todo if(hasImage) check
             if (state.hasImage && state.remoteImageUrl?.isNotEmpty() == true) {
                 AsyncImage(
                     model = state.remoteImageUrl,
@@ -83,31 +99,36 @@ fun ChangeAvatarContent(
                 )
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = ("localImgUri = " + state.localImageUri?.let { "$it" }) ?: "empty")
+            Spacer(modifier = Modifier.height(16.dp))
             Text(text = if (state.remoteImageUrl.isNullOrBlank()) {
                 state.uploadPercentage?.let { "$it%" } ?: ""
             } else "")
-            Text(text = state.remoteImageUrl?.let { "$it" } ?: "empty")
-            Button(
-                onClick = {
-                    when (imageSource) {
-                        IMAGE_SOURCE_FILEPICKER -> {
-                            imagePicker.launch("image/*")
-                        }
-                        IMAGE_SOURCE_CAMERA -> {
-                            val uri = CustomFileProvider.getImageUri(context)
-                            // todo pass through onEvent()
-                            viewModel.state = viewModel.state.copy(hasImage = false) //todo remove?
-                            viewModel.state = viewModel.state.copy(localImageUri = uri.toString())
-                            cameraLauncher.launch(uri)
-                        }
-                        else -> { // todo get rid of using sealed
-                            imagePicker.launch("image/*")
-                        }
-                    }
-                }
-            ) {
-                Text(text = "Click, but remove btn later pls")
-            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = ("remoteImgUri = " + state.remoteImageUrl?.let { "$it" }) ?: "empty")
+            Spacer(modifier = Modifier.height(16.dp))
+//            Button(
+//                onClick = {
+//                    when (imageSource) {
+//                        IMAGE_SOURCE_FILEPICKER -> {
+//                            imagePicker.launch("image/*")
+//                        }
+//                        IMAGE_SOURCE_CAMERA -> {
+//                            // todo pass through onEvent()
+//                            val uri = CustomFileProvider.getImageUri(context)
+//                            viewModel.state = viewModel.state.copy(hasImage = false) //todo remove?
+//                            viewModel.state = viewModel.state.copy(localImageUri = uri.toString())
+//                            cameraLauncher.launch(uri)
+//                        }
+//                        else -> { // todo get rid of it by using sealed
+//                            imagePicker.launch("image/*")
+//                        }
+//                    }
+//                }
+//            ) {
+//                Text(text = "Click, but remove btn later pls")
+//            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
