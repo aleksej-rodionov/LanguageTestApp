@@ -112,7 +112,9 @@ class ChangeAvatarContentViewModel @Inject constructor(
             when (result) {
                 is Resource.Success -> {
                     state =
-                        state.copy(remoteImageUrl = "http://i1.wallbox.ru/wallpapers/main2/202028/15944759085f09c584aadc87.43708441.jpg") // for testing
+                        state.copy(
+                            remoteImageUrl = "http://i1.wallbox.ru/wallpapers/main2/202028/15944759085f09c584aadc87.43708441.jpg"
+                        ) // for testing
                 }
                 is Resource.Error -> {
                     state = state.copy(
