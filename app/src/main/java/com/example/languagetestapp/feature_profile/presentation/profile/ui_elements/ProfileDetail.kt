@@ -1,6 +1,5 @@
 package com.example.languagetestapp.feature_profile.presentation.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -24,11 +24,16 @@ import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import androidx.constraintlayout.compose.rememberMotionLayoutState
+import coil.compose.AsyncImage
 import com.example.languagetestapp.R
 
 @OptIn(ExperimentalMotionApi::class)
 @Composable
 fun ProfileDetail(
+    email: String?,
+    currentAvaUrl: String?,
+    newAvaUrl: String?,
+    avaUploadProgress: Int?,
     onChangePasswordClick: () -> Unit,
     onAvaClick: () -> Unit
 ) {
@@ -57,10 +62,13 @@ fun ProfileDetail(
                 .layoutId("box")
         )
 
-        Image(
-            painter = painterResource(id = R.drawable.ava_placeholder),
+        AsyncImage(
+            model = currentAvaUrl ?: newAvaUrl,
             contentDescription = null,
+            error = painterResource(R.drawable.ava_placeholder),
             modifier = Modifier
+                .width(250.dp)
+                .height(250.dp)
                 .clip(CircleShape)
                 .border(
                     width = 2.dp,
@@ -70,11 +78,14 @@ fun ProfileDetail(
                 .layoutId("profile_pic")
                 .clickable {
                     onAvaClick()
-                }
+                },
+            contentScale = ContentScale.Crop
         )
 
         Text(
-            text = "test@email.cz",
+            text = ((email ?: " email not found ") + avaUploadProgress?.let {
+                "${it}%"
+            }),
             fontSize = 24.sp,
             modifier = Modifier.layoutId("email"),
             color = Color.White

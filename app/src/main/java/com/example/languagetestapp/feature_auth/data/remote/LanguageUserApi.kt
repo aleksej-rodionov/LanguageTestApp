@@ -1,6 +1,7 @@
 package com.example.languagetestapp.feature_auth.data.remote
 
 import com.example.languagetestapp.feature_auth.data.remote.model.AuthResponse
+import com.example.languagetestapp.feature_auth.data.remote.model.UpdateAvaUrl
 import com.example.languagetestapp.feature_auth.data.remote.model.UserDto
 import com.google.gson.annotations.SerializedName
 import retrofit2.http.*
@@ -16,6 +17,9 @@ interface LanguageUserApi {
         @Field("oldpassword") oldPassword: String,
         @Field("newpassword") newPassword: String
     ): AuthResponse<String>
+
+    @PUT("/users/change-ava")
+    suspend fun updateAva(@Body avaUrl: UpdateAvaUrl): UserResponse<UserDto>
 }
 
 

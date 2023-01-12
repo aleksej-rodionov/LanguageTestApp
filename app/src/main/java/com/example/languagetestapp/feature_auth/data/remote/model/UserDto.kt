@@ -9,10 +9,12 @@ class UserDto(
     @SerializedName("password")
     val password: String? = null,
     @SerializedName("_id")
-    val _id: String? = null
+    val _id: String? = null,
+    @SerializedName("ava_url")
+    val avaUrl: String? = null
 ) {
 
     fun toUser(): User {
-        return User(email, password, _id)
+        return User(email, password, _id, avaUrl)
     }
 }

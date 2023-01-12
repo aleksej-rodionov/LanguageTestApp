@@ -5,23 +5,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.languagetestapp.feature_notes.presentation.note_list.NoteListUiEvent
+import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
 import com.example.languagetestapp.feature_profile.presentation.util.ProfileDest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-
+    private val authRepo: AuthRepo
 ): ViewModel() {
 
     var state by mutableStateOf(ProfileState())
 
     private val _uiEvent = Channel<ProfileUiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
+
+    init {
+        fetchLocalUserData()
+    }
 
     fun onAction(action: ProfileAction) {
         when (action) {
@@ -48,12 +54,20 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun fetchLocalUserData() = viewModelScope.launch(Dispatchers.IO) {
+        val user = authRepo.fetchLocalUserData()
+        withContext(Dispatchers.Main) {
+            state = state.copy(email = user?.email ?: "Email not found", currentImageUrl = user?.avaUrl)
+        }
+    }
 }
 
 
 data class ProfileState(
     val email: String = "email not found",
-    val photoUrl: String? = null,
+    val currentImageUrl: String? = null,
+    val newPhotoUrl: String? = null, //todo update this when uploaded
     val photoUploadProgress: Int? = null
 )
 

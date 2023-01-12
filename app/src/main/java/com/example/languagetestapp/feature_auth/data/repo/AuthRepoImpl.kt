@@ -6,7 +6,9 @@ import com.example.languagetestapp.feature_auth.data.local.AuthStorageGateway
 import com.example.languagetestapp.feature_auth.data.remote.model.LoginUserDto
 import com.example.languagetestapp.feature_auth.data.remote.LanguageAuthApi
 import com.example.languagetestapp.feature_auth.data.remote.LanguageUserApi
+import com.example.languagetestapp.feature_auth.data.remote.UserResponse
 import com.example.languagetestapp.feature_auth.data.remote.model.TokenDto
+import com.example.languagetestapp.feature_auth.data.remote.model.UpdateAvaUrl
 import com.example.languagetestapp.feature_auth.data.remote.model.UserDto
 import com.example.languagetestapp.feature_auth.domain.model.Token
 import com.example.languagetestapp.feature_auth.domain.model.User
@@ -16,6 +18,7 @@ import com.example.languagetestapp.feature_auth.util.Constants.TAG_AUTH
 import com.example.languagetestapp.feature_auth.util.Constants.TAG_USER
 import com.example.languagetestapp.feature_auth.util.countExp
 
+//todo move all UserApi methods to new UserRepo
 class AuthRepoImpl(
     private val authApi: LanguageAuthApi,
     private val userApi: LanguageUserApi,
@@ -60,6 +63,7 @@ class AuthRepoImpl(
         }
     }
 
+    // todo move this to UserRepo
     override suspend fun changePassword(oldPassword: String, newPassword: String): Resource<String> {
         try {
             val response = userApi.changePassword(oldPassword, newPassword)
@@ -132,6 +136,7 @@ class AuthRepoImpl(
         return authStorageGateway.fetchAccessToken()
     }
 
+    //todo move all UserApi methods to new UserRepo
     override suspend fun getCurrentUserInfo(): Resource<User> {
 
         try {
@@ -154,6 +159,63 @@ class AuthRepoImpl(
             Log.d(TAG_USER, "getCurrentUserInfo: " + e.message ?: "Unknown error occurred")
             return Resource.Error(e.message ?: "Unknown error occurred")
         }
+    }
+
+    override suspend fun updateAva(avaUrl: String): Resource<String> {
+
+        val updateAvaUrl = UpdateAvaUrl(avaUrl)
+
+        try {
+            val response = userApi.updateAva(updateAvaUrl)
+            if (response.status == "ok") {
+                response.body?.avaUrl?.let {
+                    val newAva = it
+                    updateAvaInLocalData(newAva)
+                    return Resource.Success(it)
+                } ?: run {
+                    return Resource.Error("Response is success, but newPassword not found")
+                }
+            } else {
+                return Resource.Error(response.error ?: "Unknown error occurred")
+            }
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unknown exception")
+        }
+
+    }
+
+    //todo move all UserApi methods to new UserRepo
+    override suspend fun updateAvaInLocalData(avaUrl: String): Resource<User> {
+
+        try {
+            val response = userApi.getCurrentUserInfo()
+            Log.d(TAG_USER, "getCurrentUserInfo: $response")
+
+            if (response.status == "ok") {
+                response.body?.let {
+                    val user = it.toUser()
+                    authStorageGateway.storeCurrentUserData(user) // save data with new avaUrl
+
+                    return Resource.Success(user)
+                } ?: run {
+                    Log.d(TAG_USER, "getCurrentUserInfo: " + "Success but body is null")
+                    return Resource.Error("Success but body is null")
+                }
+            } else {
+                Log.d(TAG_USER, "getCurrentUserInfo: " + response.error ?: "Unknown error occurred")
+                return Resource.Error(response.error ?: "Unknown error occurred")
+            }
+        } catch (e: Exception) {
+            Log.d(TAG_USER, "getCurrentUserInfo: " + e.message ?: "Unknown error occurred")
+            return Resource.Error(e.message ?: "Unknown error occurred")
+        }
+
+    }
+
+    //todo move all UserStorage fetch-methods to new UserRepo
+    override fun fetchLocalUserData(): User? {
+        val user = authStorageGateway.fetchCurrentUserData()
+        return user
     }
 
     //====================PRIVATE METHODS====================

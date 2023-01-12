@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.Resource
+import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PickImageContentViewModel @Inject constructor(
     private val fileRepo: FileRepo,
-    private val fileStatefulRepo: FileStatefulRepo
+    private val fileStatefulRepo: FileStatefulRepo,
+    private val authRepo: AuthRepo // todo must be replaced by new userRepo for such methods
 ): ViewModel() {
 
     var state by mutableStateOf(State())
@@ -41,6 +43,12 @@ class PickImageContentViewModel @Inject constructor(
         internalUriResult.data?.let { executeUploadingBytes(it) } // prepare multipart body
     }
 
+    fun updateUserWithNewAva() = viewModelScope.launch {
+        state.remoteImageUrl?.let {
+            authRepo.updateAva(it) // for testing
+        }
+    }
+
     private fun executeUploadingBytes(imageFile: File) = viewModelScope.launch(Dispatchers.IO) {
         val resource = fileRepo.prepareFileFromInternalStorage(imageFile)
         when (resource) {
@@ -55,7 +63,6 @@ class PickImageContentViewModel @Inject constructor(
         val result = fileRepo.postFile(part)
         when (result) {
             is Resource.Success -> {
-//                state = state.copy(remoteImageUrl = result.data ?: "Success but no data")
                 state = state.copy(remoteImageUrl = "http://i1.wallbox.ru/wallpapers/main2/202028/15944759085f09c584aadc87.43708441.jpg") // for testing
             }
             is Resource.Error -> {
@@ -70,7 +77,7 @@ class PickImageContentViewModel @Inject constructor(
     //====================STATE AND EVENT====================
     data class State(
         val uploadPercentage: Int? = null,
-        val remoteImageUrl: String? = null,
+        val remoteImageUrl: String? = null, // todo make old and new?
         val hasImage: Boolean = false
     )
 

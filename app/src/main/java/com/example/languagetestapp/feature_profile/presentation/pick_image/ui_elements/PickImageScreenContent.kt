@@ -83,6 +83,14 @@ fun PickImageScreenContent(
             ) {
                 Text(text = "Click, but remove btn later pls")
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    viewModel.updateUserWithNewAva()
+                }
+            ) {
+                Text(text = "Save")
+            }
         }
     }
 }

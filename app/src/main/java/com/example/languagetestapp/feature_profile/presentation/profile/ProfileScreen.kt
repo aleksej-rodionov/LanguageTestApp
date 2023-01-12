@@ -10,7 +10,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.languagetestapp.core.util.permission.HandlePermissionsRequest
 import com.example.languagetestapp.core.util.permission.PermissionHandler
 import kotlinx.coroutines.launch
 
@@ -107,6 +106,10 @@ fun ProfileScreen(
         ) {
 
             ProfileDetail(
+                email = state.email,
+                currentAvaUrl = state.currentImageUrl,
+                newAvaUrl = state.newPhotoUrl,
+                avaUploadProgress = state.photoUploadProgress,
                 onChangePasswordClick = {
                     viewModel.onAction(ProfileAction.OnChangePasswordClick)
                 },
