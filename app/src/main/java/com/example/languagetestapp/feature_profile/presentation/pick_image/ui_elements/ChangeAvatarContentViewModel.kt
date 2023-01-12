@@ -12,10 +12,14 @@ import com.example.languagetestapp.core.util.Resource
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
+import com.example.languagetestapp.feature_file.util.CustomFileProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import java.io.File
 import javax.inject.Inject
@@ -23,7 +27,7 @@ import javax.inject.Inject
 const val TAG_COMPARE_URI = "TAG_COMPARE_URI"
 
 @HiltViewModel
-class PickImageContentViewModel @Inject constructor(
+class ChangeAvatarContentViewModel @Inject constructor(
     private val fileRepo: FileRepo,
     private val fileStatefulRepo: FileStatefulRepo,
     private val authRepo: AuthRepo // todo must be replaced by new userRepo for such methods
@@ -31,10 +35,37 @@ class PickImageContentViewModel @Inject constructor(
 
     var state by mutableStateOf(State())
 
+    private val _uiEffect = Channel<UiEffect>()
+    val uiEffect = _uiEffect.receiveAsFlow()
+
     init {
         viewModelScope.launch {
             fileStatefulRepo.progressUpdated.collectLatest {
                 state = state.copy(uploadPercentage = it)
+            }
+        }
+    }
+
+    fun onEvent(event: Event) {
+        when (event) {
+            is Event.LaunchImagePicker -> {
+                viewModelScope.launch { _uiEffect.send(UiEffect.LaunchPicker) }
+            }
+            is Event.LaunchCamera -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val uri = fileRepo.provideUriForCamera()
+                    withContext(Dispatchers.Main) {
+                        state = state.copy(hasImage = false) //todo remove?
+                        state = state.copy(localImageUri = uri.toString())
+                        _uiEffect.send(UiEffect.LaunchCameraWithUri(uri))
+                    }
+                }
+            }
+            is Event.OnImageSelected -> {
+
+            }
+            is Event.OnCameraSuccess -> {
+
             }
         }
     }
@@ -49,27 +80,28 @@ class PickImageContentViewModel @Inject constructor(
             val localUri = it.toUri().toString()
             Log.d(TAG_COMPARE_URI, "onImageSelected: localUri = $localUri")
             state = state.copy(localImageUri = localUri)
-            executeUploadingBytes(/*it*/) // prepare multipart body
+            executeUploadFromLocalStorageToBodyPart(/*it*/) // prepare multipart body
         }
     }
 
-    fun executeUploadingBytes(/*imageFile: File*/) = viewModelScope.launch(Dispatchers.IO) {
-        state.localImageUri?.toUri()?.let { uri ->
-            Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri = $uri")
-            val imageFile = File(uri.path)
-            val resource = fileRepo.prepareFileFromInternalStorage(imageFile)
-            when (resource) {
-                is Resource.Error -> {
-                    //todo showSnackbar
-                }
-                is Resource.Success -> {
-                    resource.data?.let { part -> uploadFinalBodyPart(part) }
+    fun executeUploadFromLocalStorageToBodyPart(/*imageFile: File*/) =
+        viewModelScope.launch(Dispatchers.IO) {
+            state.localImageUri?.toUri()?.let { uri ->
+                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri = $uri")
+                val imageFile = File(uri.path)
+                val resource = fileRepo.prepareFileFromInternalStorage(imageFile)
+                when (resource) {
+                    is Resource.Error -> {
+                        //todo showSnackbar
+                    }
+                    is Resource.Success -> {
+                        resource.data?.let { part -> sendFinalBodyPart(part) }
+                    }
                 }
             }
         }
-    }
 
-    private fun uploadFinalBodyPart(part: MultipartBody.Part) =
+    private fun sendFinalBodyPart(part: MultipartBody.Part) =
         viewModelScope.launch(Dispatchers.IO) {
             val result = fileRepo.postFile(part)
             when (result) {
@@ -101,11 +133,15 @@ class PickImageContentViewModel @Inject constructor(
     )
 
     sealed class Event { //todo use later instead direct callbacks
-        data class UploadImage(val uri: Uri) : Event()
         object LaunchImagePicker : Event()
+        object LaunchCamera : Event()
+        data class OnImageSelected(val uri: Uri) : Event()
+        data class OnCameraSuccess(val success: Boolean) : Event()
     }
 
     sealed class UiEffect {
         data class SnackbarMsg(val msg: String) : UiEffect()
+        object LaunchPicker : UiEffect()
+        data class LaunchCameraWithUri(val uri: Uri) : UiEffect()
     }
 }

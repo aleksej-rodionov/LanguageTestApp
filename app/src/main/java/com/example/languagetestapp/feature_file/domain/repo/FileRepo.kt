@@ -14,6 +14,8 @@ interface FileRepo {
     fun copyFileFromExternal(externalUri: Uri): Resource<File>
 
     suspend fun prepareFileFromInternalStorage(imageFile: File): Resource<MultipartBody.Part>
+
+    fun provideUriForCamera(): Uri
 }
 
 

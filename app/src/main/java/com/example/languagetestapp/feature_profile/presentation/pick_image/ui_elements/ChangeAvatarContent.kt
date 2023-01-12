@@ -6,8 +6,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
+import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +27,8 @@ import com.example.languagetestapp.feature_profile.presentation.pick_image.IMAGE
 @Composable
 fun ChangeAvatarContent(
     imageSource: String,
-    viewModel: PickImageContentViewModel = hiltViewModel()
+    showSnackbar: (String, SnackbarDuration) -> Unit,
+    viewModel: ChangeAvatarContentViewModel = hiltViewModel()
 ) {
 
     val context = LocalContext.current
@@ -47,25 +50,41 @@ fun ChangeAvatarContent(
         onResult = { isSuccess ->
             // todo pass through onEvent()
             viewModel.state = viewModel.state.copy(hasImage = isSuccess)
-            viewModel.executeUploadingBytes()
+            viewModel.executeUploadFromLocalStorageToBodyPart()
         }
     )
 
     when (imageSource) {
         IMAGE_SOURCE_FILEPICKER -> {
-            imagePicker.launch("image/*")
+            // todo pass through onEvent()
+//            imagePicker.launch("image/*")
+            viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchImagePicker)
         }
         IMAGE_SOURCE_CAMERA -> {
             // todo pass through onEvent()
-            val uri = CustomFileProvider.getImageUri(context)
-            viewModel.state = viewModel.state.copy(hasImage = false) //todo remove?
-            viewModel.state = viewModel.state.copy(localImageUri = uri.toString())
-            cameraLauncher.launch(uri)
+            viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchCamera)
         }
         else -> { // todo get rid of it by using sealed
-            imagePicker.launch("image/*")
+//            imagePicker.launch("image/*")
+            viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchImagePicker)
         }
     }
+
+    LaunchedEffect(key1 = true, block = {
+        viewModel.uiEffect.collect { effect ->
+            when (effect) {
+                is ChangeAvatarContentViewModel.UiEffect.SnackbarMsg -> {
+                    showSnackbar(effect.msg, SnackbarDuration.Short)
+                }
+                is ChangeAvatarContentViewModel.UiEffect.LaunchPicker -> {
+                    imagePicker.launch("image/*")
+                }
+                is ChangeAvatarContentViewModel.UiEffect.LaunchCameraWithUri -> {
+                    cameraLauncher.launch(effect.uri)
+                }
+            }
+        }
+    })
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(

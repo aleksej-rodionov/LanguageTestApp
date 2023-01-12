@@ -12,6 +12,7 @@ import com.example.languagetestapp.feature_file.domain.repo.FileRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
 import com.example.languagetestapp.feature_file.domain.repo.ProgressResource
 import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
+import com.example.languagetestapp.feature_file.util.CustomFileProvider
 import com.example.languagetestapp.feature_file.util.getFileName
 import com.example.languagetestapp.feature_profile.presentation.util.FileManager
 import kotlinx.coroutines.CoroutineScope
@@ -89,7 +90,7 @@ class FileRepoImpl(
         return result
     }
 
-
-
-    //====================PRIVATE METHODS====================
+    override fun provideUriForCamera(): Uri {
+        return CustomFileProvider.getImageUri(context)
+    }
 }

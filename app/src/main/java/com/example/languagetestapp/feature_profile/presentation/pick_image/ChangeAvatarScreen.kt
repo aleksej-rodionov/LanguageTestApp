@@ -7,7 +7,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.languagetestapp.core.util.permission.HandlePermissionsRequest
-import com.example.languagetestapp.feature_profile.presentation.camera.ui_elements.CameraScreenContent
 import com.example.languagetestapp.feature_profile.presentation.pick_image.ui_elements.ChangeAvatarContent
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
@@ -64,7 +63,10 @@ fun ChangeAvatarScreen(
     if (!allPermissionsGranted) {
         viewModel.onEvent(ChangeAvatarViewModel.Event.PermissionRequired)
     } else {
-        ChangeAvatarContent(state.imageSourceChosen)
+        ChangeAvatarContent(
+            state.imageSourceChosen,
+            showSnackbar
+        )
     }
 
 //    }
