@@ -46,6 +46,7 @@ fun ChangeAvatarContent(
         onResult = { isSuccess ->
             // todo pass through onEvent()
             viewModel.state = viewModel.state.copy(hasImage = isSuccess)
+            viewModel.executeUploadingBytes()
         }
     )
 
