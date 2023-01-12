@@ -37,10 +37,8 @@ fun ChangeAvatarContent(
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
-            // todo pass through onEvent()
-            viewModel.state = viewModel.state.copy(hasImage = uri != null)
             uri?.let {
-                viewModel.onImageSelected(it)
+                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnImageSelected(it))
             }
         }
     )
@@ -48,24 +46,20 @@ fun ChangeAvatarContent(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { isSuccess ->
-            // todo pass through onEvent()
-            viewModel.state = viewModel.state.copy(hasImage = isSuccess)
-            viewModel.executeUploadFromLocalStorageToBodyPart()
+            if (isSuccess) {
+                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnCameraSuccess)
+            }
         }
     )
 
     when (imageSource) {
         IMAGE_SOURCE_FILEPICKER -> {
-            // todo pass through onEvent()
-//            imagePicker.launch("image/*")
             viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchImagePicker)
         }
         IMAGE_SOURCE_CAMERA -> {
-            // todo pass through onEvent()
             viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchCamera)
         }
         else -> { // todo get rid of it by using sealed
-//            imagePicker.launch("image/*")
             viewModel.onEvent(ChangeAvatarContentViewModel.Event.LaunchImagePicker)
         }
     }
@@ -151,7 +145,7 @@ fun ChangeAvatarContent(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    viewModel.updateUserWithNewAva()
+                    viewModel.onEvent(ChangeAvatarContentViewModel.Event.Submit)
                 }
             ) {
                 Text(text = "Save")

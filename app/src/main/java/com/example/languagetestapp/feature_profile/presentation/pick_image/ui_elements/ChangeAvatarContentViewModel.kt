@@ -62,16 +62,21 @@ class ChangeAvatarContentViewModel @Inject constructor(
                 }
             }
             is Event.OnImageSelected -> {
-
+                state = state.copy(hasImage = true)
+                onImageSelected(event.uri)
             }
             is Event.OnCameraSuccess -> {
-
+                state = state.copy(hasImage = true)
+                executeUploadFromLocalStorageToBodyPart()
+            }
+            is Event.Submit -> {
+                updateUserWithNewAva()
             }
         }
     }
 
 
-    fun onImageSelected(uri: Uri) = viewModelScope.launch {
+    private fun onImageSelected(uri: Uri) = viewModelScope.launch {
 
         val internalUriResult =
             fileRepo.copyFileFromExternal(uri) // copy external file to app-specific storage
@@ -136,7 +141,8 @@ class ChangeAvatarContentViewModel @Inject constructor(
         object LaunchImagePicker : Event()
         object LaunchCamera : Event()
         data class OnImageSelected(val uri: Uri) : Event()
-        data class OnCameraSuccess(val success: Boolean) : Event()
+        object OnCameraSuccess : Event()
+        object Submit: Event()
     }
 
     sealed class UiEffect {
