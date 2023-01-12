@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
+import com.example.languagetestapp.feature_profile.presentation.pick_image.IMAGE_SOURCE_CAMERA
+import com.example.languagetestapp.feature_profile.presentation.pick_image.IMAGE_SOURCE_FILEPICKER
 import com.example.languagetestapp.feature_profile.presentation.util.ProfileDest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,12 +46,16 @@ class ProfileViewModel @Inject constructor(
             }
             is ProfileAction.OnCamera -> {
                 viewModelScope.launch {
-                    _uiEvent.send(ProfileUiEvent.Navigate(ProfileDest.CameraDest.route))
+                    _uiEvent.send(ProfileUiEvent.Navigate(
+                        ProfileDest.ChangeAvatarDest.route + "?source=${IMAGE_SOURCE_CAMERA}"
+                    ))
                 }
             }
             is ProfileAction.OnPickFileImage -> {
                 viewModelScope.launch {
-                    _uiEvent.send(ProfileUiEvent.Navigate(ProfileDest.PickImageDest.route))
+                    _uiEvent.send(ProfileUiEvent.Navigate(
+                        ProfileDest.ChangeAvatarDest.route + "?source=${IMAGE_SOURCE_FILEPICKER}"
+                    ))
                 }
             }
         }

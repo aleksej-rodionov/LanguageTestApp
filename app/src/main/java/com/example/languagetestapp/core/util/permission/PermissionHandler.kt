@@ -52,7 +52,7 @@ class PermissionHandler {
         }
     }
 
-    data class PermissionState (
+    data class PermissionState(
         val multiplePermissionState: MultiplePermissionsState? = null,
         val permissionAction: Action = Action.NO_ACTION
     )
@@ -72,7 +72,6 @@ class PermissionHandler {
     enum class Action {
         REQUEST_PERMISSION, SHOW_RATIONALE, SHOW_NEVER_ASK_AGAIN, NO_ACTION
     }
-
 
 
     private fun onPermissionsStateUpdated(permissionState: MultiplePermissionsState) {
@@ -96,7 +95,7 @@ class PermissionHandler {
     }
 
     private fun onPermissionRequired() {
-            Log.d("TAG_PERMIT_ACT_REQ", "onPermissionRequired: CALLED ")
+        Log.d("TAG_PERMIT_ACT_REQ", "onPermissionRequired: CALLED ")
         _state.value.multiplePermissionState?.let {
             val permissionAction =
                 if (!it.allPermissionsGranted && !it.shouldShowRationale && !it.permissionRequested) {

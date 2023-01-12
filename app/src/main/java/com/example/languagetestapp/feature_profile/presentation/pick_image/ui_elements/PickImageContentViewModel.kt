@@ -1,4 +1,4 @@
-package com.example.languagetestapp.feature_profile.presentation.pick_image
+package com.example.languagetestapp.feature_profile.presentation.pick_image.ui_elements
 
 import android.net.Uri
 import androidx.compose.runtime.getValue
@@ -12,7 +12,6 @@ import com.example.languagetestapp.feature_file.domain.repo.FileRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -77,6 +76,7 @@ class PickImageContentViewModel @Inject constructor(
     //====================STATE AND EVENT====================
     data class State(
         val uploadPercentage: Int? = null,
+        val localImageUri: String? = null,
         val remoteImageUrl: String? = null, // todo make old and new?
         val hasImage: Boolean = false
     )

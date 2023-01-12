@@ -3,10 +3,10 @@ package com.example.languagetestapp.feature_profile.presentation.pick_image
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.languagetestapp.core.util.permission.PermissionHandler
-import com.example.languagetestapp.feature_profile.presentation.util.FileManager
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,9 +20,12 @@ import javax.inject.Inject
 
 @OptIn(ExperimentalPermissionsApi::class)
 @HiltViewModel
-class PickImageViewModel @Inject constructor(
-    val permissionsHandler: PermissionHandler
+class ChangeAvatarViewModel @Inject constructor(
+    val permissionsHandler: PermissionHandler,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private var _imageSource: String? = IMAGE_SOURCE_FILEPICKER
 
     var state by mutableStateOf(State())
 
@@ -30,6 +33,11 @@ class PickImageViewModel @Inject constructor(
     val uiEvent = _uiEffect.receiveAsFlow()
 
     init {
+        _imageSource = savedStateHandle.get<String>("source")
+        state = state.copy(
+            imageSourceChosen = _imageSource ?: IMAGE_SOURCE_FILEPICKER
+        )
+
         permissionsHandler.state.onEach { permHandlerState ->
             state = state.copy(
                 multiplePermissionsState = permHandlerState.multiplePermissionState
@@ -61,6 +69,7 @@ class PickImageViewModel @Inject constructor(
 
     //====================STATE AND EVENT====================
     data class State @OptIn(ExperimentalPermissionsApi::class) constructor(
+        val imageSourceChosen: String = IMAGE_SOURCE_FILEPICKER,
         val permissionRequestInFlight: Boolean = false,
         val hasCameraPermission: Boolean = false,
         val multiplePermissionsState: MultiplePermissionsState? = null,
