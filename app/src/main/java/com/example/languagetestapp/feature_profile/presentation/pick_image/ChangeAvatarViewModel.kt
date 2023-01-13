@@ -153,7 +153,7 @@ class ChangeAvatarViewModel @Inject constructor(
 
     private fun sendFinalBodyPart(part: MultipartBody.Part) =
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d(TAG_COMPARE_URI, "sendFinalBodyPart: part = ${part.body}")
+//            Log.d(TAG_COMPARE_URI, "sendFinalBodyPart: part = ${part.body}")
             val result = fileRepo.postFile(part)
             when (result) {
                 is Resource.Success -> {
@@ -168,6 +168,7 @@ class ChangeAvatarViewModel @Inject constructor(
         }
 
     private fun updateUserWithNewAva() = viewModelScope.launch {
+        Log.d(TAG_COMPARE_URI, "updateUserWithNewAva: remoteUriToSetIntoUser = ${state.remoteImageUrl ?: "NULL"}")
         state.remoteImageUrl?.let {
             val result = authRepo.updateAva(it) // for final submit and save new ava to user in BackEnd
             when (result) {

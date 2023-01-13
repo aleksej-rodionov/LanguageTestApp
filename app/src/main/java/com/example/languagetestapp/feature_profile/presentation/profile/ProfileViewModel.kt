@@ -61,7 +61,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun fetchLocalUserData() = viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchLocalUserData() = viewModelScope.launch(Dispatchers.IO) {
         val user = authRepo.fetchLocalUserData()
         withContext(Dispatchers.Main) {
             state = state.copy(email = user?.email ?: "Email not found", currentImageUrl = user?.avaUrl)
