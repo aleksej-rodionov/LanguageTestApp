@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.languagetestapp.core.util.permission.HandlePermissionsRequest
@@ -23,6 +24,8 @@ fun ChangeAvatarScreen(
 
     val state = viewModel.state
 
+//    val launchSourceHandled = remember { mutableStateOf(false) }
+
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -39,26 +42,6 @@ fun ChangeAvatarScreen(
                 viewModel.onEvent(ChangeAvatarViewModel.Event.OnCameraSuccess)
             }
         }
-    )
-
-    val permissions = remember {
-        //todo replace with sealed class
-        when (state.imageSourceChosen) {
-            IMAGE_SOURCE_FILEPICKER -> {
-                listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            }
-            IMAGE_SOURCE_CAMERA -> {
-                listOf(Manifest.permission.CAMERA)
-            }
-            else -> {
-                listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            }
-        }
-    }
-
-    HandlePermissionsRequest(
-        permissions = permissions,
-        permissionHandler = viewModel.permissionsHandler
     )
 
     LaunchedEffect(key1 = true, block = {
@@ -81,6 +64,26 @@ fun ChangeAvatarScreen(
         }
     })
 
+    val permissions = remember {
+        //todo replace with sealed class
+        when (state.imageSourceChosen) {
+            IMAGE_SOURCE_FILEPICKER -> {
+                listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+            IMAGE_SOURCE_CAMERA -> {
+                listOf(Manifest.permission.CAMERA)
+            }
+            else -> {
+                listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }
+    }
+
+    HandlePermissionsRequest(
+        permissions = permissions,
+        permissionHandler = viewModel.permissionsHandler
+    )
+
 //    CompositionLocalProvider("blabla") {
 
     val allPermissionsGranted =
@@ -89,6 +92,24 @@ fun ChangeAvatarScreen(
     if (!allPermissionsGranted) {
         viewModel.onEvent(ChangeAvatarViewModel.Event.PermissionRequired)
     } else {
+
+        if (!state.launchSourceHandled) {
+//            launchSourceHandled.value = true
+            viewModel.onEvent(ChangeAvatarViewModel.Event.LaunchSourceHandled)
+
+            when (state.imageSourceChosen) {
+                IMAGE_SOURCE_FILEPICKER -> {
+                    viewModel.onEvent(ChangeAvatarViewModel.Event.LaunchImagePicker)
+                }
+                IMAGE_SOURCE_CAMERA -> {
+                    viewModel.onEvent(ChangeAvatarViewModel.Event.LaunchCamera)
+                }
+                else -> { // todo get rid of it by using sealed
+                    viewModel.onEvent(ChangeAvatarViewModel.Event.LaunchImagePicker)
+                }
+            }
+        }
+
         with(state) {
             ChangeAvatarContent(
                 imageSourceChosen,

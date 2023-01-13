@@ -12,6 +12,7 @@ import com.example.languagetestapp.feature_file.domain.repo.FileRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
 import com.example.languagetestapp.feature_file.domain.repo.ProgressResource
 import com.example.languagetestapp.feature_file.util.Constants.TAG_FILE
+import com.example.languagetestapp.feature_file.util.Constants.TAG_PROGRESS
 import com.example.languagetestapp.feature_file.util.CustomFileProvider
 import com.example.languagetestapp.feature_file.util.getFileName
 import com.example.languagetestapp.feature_profile.presentation.util.FileManager
@@ -81,6 +82,7 @@ class FileRepoImpl(
             file = imageFile,
             contentType = "image",
             onProgressChanged = {
+                Log.d(TAG_PROGRESS, "FileRepoImpl: $it %")
                 fileStatefulRepo.onProgressUpdated(it)
             }
         )

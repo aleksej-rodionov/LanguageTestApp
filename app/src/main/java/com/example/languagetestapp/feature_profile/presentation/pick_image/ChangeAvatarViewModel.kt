@@ -14,6 +14,7 @@ import com.example.languagetestapp.core.util.permission.PermissionHandler
 import com.example.languagetestapp.feature_auth.domain.repo.AuthRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileRepo
 import com.example.languagetestapp.feature_file.domain.repo.FileStatefulRepo
+import com.example.languagetestapp.feature_file.util.Constants.TAG_PROGRESS
 import com.example.languagetestapp.feature_profile.presentation.pick_image.ui_elements.ChangeAvatarContentViewModel
 import com.example.languagetestapp.feature_profile.presentation.pick_image.ui_elements.TAG_COMPARE_URI
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -52,18 +53,6 @@ class ChangeAvatarViewModel @Inject constructor(
             imageSourceChosen = _imageSource ?: IMAGE_SOURCE_FILEPICKER
         )
 
-        when (_imageSource) {
-            IMAGE_SOURCE_FILEPICKER -> {
-                onEvent(Event.LaunchImagePicker)
-            }
-            IMAGE_SOURCE_CAMERA -> {
-                onEvent(Event.LaunchCamera)
-            }
-            else -> { // todo get rid of it by using sealed
-                onEvent(Event.LaunchImagePicker)
-            }
-        }
-
         permissionsHandler.state.onEach { permHandlerState ->
             state = state.copy(
                 multiplePermissionsState = permHandlerState.multiplePermissionState
@@ -76,6 +65,7 @@ class ChangeAvatarViewModel @Inject constructor(
         // observe progress in stateful repo
         viewModelScope.launch {
             fileStatefulRepo.progressUpdated.collectLatest {
+                Log.d(TAG_PROGRESS, "ViewModel. Observer: $it %")
                 state = state.copy(uploadPercentage = it)
             }
         }
@@ -112,6 +102,9 @@ class ChangeAvatarViewModel @Inject constructor(
                 state = state.copy(hasImage = true)
                 executeUploadFromLocalStorageToBodyPart()
             }
+            is Event.LaunchSourceHandled -> {
+                state = state.copy(launchSourceHandled = true)
+            }
             is Event.Submit -> {
                 updateUserWithNewAva()
             }
@@ -137,7 +130,7 @@ class ChangeAvatarViewModel @Inject constructor(
         }
     }
 
-    fun executeUploadFromLocalStorageToBodyPart(/*imageFile: File*/) =
+    private fun executeUploadFromLocalStorageToBodyPart(/*imageFile: File*/) =
         viewModelScope.launch(Dispatchers.IO) {
             state.localImageUri?.toUri()?.let { uri ->
                 Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri = $uri")
@@ -190,7 +183,8 @@ class ChangeAvatarViewModel @Inject constructor(
         val uploadPercentage: Int? = null,
         val localImageUri: String? = null,
         val remoteImageUrl: String? = null,
-        val hasImage: Boolean = false
+        val hasImage: Boolean = false,
+        val launchSourceHandled: Boolean = false
     )
 
     sealed class Event {
@@ -201,6 +195,7 @@ class ChangeAvatarViewModel @Inject constructor(
         object LaunchCamera : Event()
         data class OnImageSelected(val uri: Uri) : Event()
         object OnCameraSuccess : Event()
+        object LaunchSourceHandled: Event()
         object Submit: Event()
     }
 
