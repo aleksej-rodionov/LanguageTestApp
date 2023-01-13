@@ -3,6 +3,7 @@ package com.example.languagetestapp.feature_file.util
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.core.net.toUri
 
 
 fun ContentResolver.getFileName(fileUri: Uri): String {
@@ -16,3 +17,14 @@ fun ContentResolver.getFileName(fileUri: Uri): String {
     }
     return name
 }
+
+//fun Uri.refactorIfStartsWithContent(): Uri {
+//    return if (this.toString().startsWith("content://")) {
+//        val properStarting = "file:///data/user/0/"
+//        val rightPart = this.toString().split("//")[1]
+//        val newUri = (properStarting + rightPart).toUri()
+//        return newUri
+//    } else {
+//        return this
+//    }
+//}

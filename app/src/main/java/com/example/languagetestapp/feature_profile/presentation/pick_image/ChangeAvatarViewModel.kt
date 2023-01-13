@@ -90,9 +90,6 @@ class ChangeAvatarViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         state = state.copy(hasImage = false)
                         state = state.copy(localImageUri = uri.toString())
-//                        state = state.copy(localImageUri =
-//                        "file:///data/user/0/com.example.languagetestapp.fileprovider/my_images/selected_image_7633194652895633746.jpg"
-//                        )
                         _uiEffect.send(UiEffect.LaunchCameraWithUri(uri))
                     }
                 }
@@ -136,9 +133,10 @@ class ChangeAvatarViewModel @Inject constructor(
     private fun executeUploadFromLocalStorageToBodyPart(/*imageFile: File*/) =
         viewModelScope.launch(Dispatchers.IO) {
             state.localImageUri?.toUri()?.let { uri ->
-//                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri = $uri")
+                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri = $uri")
                 val imageFile = File(uri.path)
-                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri as File = $uri")
+                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri as File = ${imageFile}")
+
                 val resource = fileRepo.prepareFileFromInternalStorage(imageFile)
                 when (resource) {
                     is Resource.Error -> {
