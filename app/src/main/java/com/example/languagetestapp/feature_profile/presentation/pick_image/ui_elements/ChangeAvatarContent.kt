@@ -26,51 +26,13 @@ import com.example.languagetestapp.feature_profile.presentation.pick_image.IMAGE
 
 @Composable
 fun ChangeAvatarContent(
-    imageSource: String,
     uploadPercentage: Int? = null,
     localImageUri: String? = null,
     remoteImageUrl: String? = null,
     hasImage: Boolean = false,
     onSubmitClick: () -> Unit,
-//    showSnackbar: (String, SnackbarDuration) -> Unit,
     viewModel: ChangeAvatarContentViewModel = hiltViewModel()
 ) {
-
-//    val state = viewModel.state
-
-//    val imagePicker = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.GetContent(),
-//        onResult = { uri ->
-//            uri?.let {
-//                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnImageSelected(it))
-//            }
-//        }
-//    )
-//
-//    val cameraLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.TakePicture(),
-//        onResult = { isSuccess ->
-//            if (isSuccess) {
-//                viewModel.onEvent(ChangeAvatarContentViewModel.Event.OnCameraSuccess)
-//            }
-//        }
-//    )
-
-//    LaunchedEffect(key1 = true, block = {
-//        viewModel.uiEffect.collect { effect ->
-//            when (effect) {
-//                is ChangeAvatarContentViewModel.UiEffect.SnackbarMsg -> {
-//                    showSnackbar(effect.msg, SnackbarDuration.Short)
-//                }
-//                is ChangeAvatarContentViewModel.UiEffect.LaunchPicker -> {
-//                    imagePicker.launch("image/*")
-//                }
-//                is ChangeAvatarContentViewModel.UiEffect.LaunchCameraWithUri -> {
-//                    cameraLauncher.launch(effect.uri)
-//                }
-//            }
-//        }
-//    })
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -81,9 +43,9 @@ fun ChangeAvatarContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (hasImage && remoteImageUrl?.isNotEmpty() == true) {
+            if (hasImage && (remoteImageUrl?.isNotEmpty() == true || localImageUri?.isNotEmpty() == true )) {
                 AsyncImage(
-                    model = remoteImageUrl,
+                    model = remoteImageUrl ?: localImageUri,
                     contentDescription = null,
                     error = painterResource(R.drawable.ava_placeholder),
                     modifier = Modifier
@@ -113,27 +75,7 @@ fun ChangeAvatarContent(
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = ("remoteImgUri = " + remoteImageUrl?.let { "$it" }) ?: "empty")
             Spacer(modifier = Modifier.height(16.dp))
-//            Button(
-//                onClick = {
-//                    when (imageSource) {
-//                        IMAGE_SOURCE_FILEPICKER -> {
-//                            imagePicker.launch("image/*")
-//                        }
-//                        IMAGE_SOURCE_CAMERA -> {
-//                            // todo pass through onEvent()
-//                            val uri = CustomFileProvider.getImageUri(context)
-//                            viewModel.state = viewModel.state.copy(hasImage = false) //todo remove?
-//                            viewModel.state = viewModel.state.copy(localImageUri = uri.toString())
-//                            cameraLauncher.launch(uri)
-//                        }
-//                        else -> { // todo get rid of it by using sealed
-//                            imagePicker.launch("image/*")
-//                        }
-//                    }
-//                }
-//            ) {
-//                Text(text = "Click, but remove btn later pls")
-//            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {

@@ -173,7 +173,7 @@ class AuthRepoImpl(
                     updateAvaInLocalData(newAva)
                     return Resource.Success(it)
                 } ?: run {
-                    return Resource.Error("Response is success, but newPassword not found")
+                    return Resource.Error("Response is success, but newAva not found")
                 }
             } else {
                 return Resource.Error(response.error ?: "Unknown error occurred")

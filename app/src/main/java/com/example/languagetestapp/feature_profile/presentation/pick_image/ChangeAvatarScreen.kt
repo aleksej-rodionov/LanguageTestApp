@@ -112,7 +112,6 @@ fun ChangeAvatarScreen(
 
         with(state) {
             ChangeAvatarContent(
-                imageSourceChosen,
                 uploadPercentage,
                 localImageUri,
                 remoteImageUrl,

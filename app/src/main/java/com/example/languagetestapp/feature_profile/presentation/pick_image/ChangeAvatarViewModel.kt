@@ -88,8 +88,11 @@ class ChangeAvatarViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     val uri = fileRepo.provideUriForCamera()
                     withContext(Dispatchers.Main) {
-                        state = state.copy(hasImage = false) //todo remove?
+                        state = state.copy(hasImage = false)
                         state = state.copy(localImageUri = uri.toString())
+//                        state = state.copy(localImageUri =
+//                        "file:///data/user/0/com.example.languagetestapp.fileprovider/my_images/selected_image_7633194652895633746.jpg"
+//                        )
                         _uiEffect.send(UiEffect.LaunchCameraWithUri(uri))
                     }
                 }
@@ -133,12 +136,13 @@ class ChangeAvatarViewModel @Inject constructor(
     private fun executeUploadFromLocalStorageToBodyPart(/*imageFile: File*/) =
         viewModelScope.launch(Dispatchers.IO) {
             state.localImageUri?.toUri()?.let { uri ->
-                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri = $uri")
+//                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri = $uri")
                 val imageFile = File(uri.path)
+                Log.d(TAG_COMPARE_URI, "executeUploadingBytes: localUri as File = $uri")
                 val resource = fileRepo.prepareFileFromInternalStorage(imageFile)
                 when (resource) {
                     is Resource.Error -> {
-                        //todo showSnackbar
+                        _uiEffect.send(UiEffect.SnackbarMsg("Loading BodyPart:\n" + resource.message ?: "Unknown error loading bodyPart"))
                     }
                     is Resource.Success -> {
                         resource.data?.let { part -> sendFinalBodyPart(part) }
@@ -149,25 +153,31 @@ class ChangeAvatarViewModel @Inject constructor(
 
     private fun sendFinalBodyPart(part: MultipartBody.Part) =
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG_COMPARE_URI, "sendFinalBodyPart: part = ${part.body}")
             val result = fileRepo.postFile(part)
             when (result) {
                 is Resource.Success -> {
-                    state =
-                        state.copy(
+                    state = state.copy(
                             remoteImageUrl = "http://i1.wallbox.ru/wallpapers/main2/202028/15944759085f09c584aadc87.43708441.jpg"
                         ) // for testing
                 }
                 is Resource.Error -> {
-                    state = state.copy(
-                        remoteImageUrl = "Show snackbar = " + result.message ?: "Show snackbar"
-                    )
+                    _uiEffect.send(UiEffect.SnackbarMsg("Sending File:\n" + result.message ?: "Unknown error sending file"))
                 }
             }
         }
 
-    fun updateUserWithNewAva() = viewModelScope.launch {
+    private fun updateUserWithNewAva() = viewModelScope.launch {
         state.remoteImageUrl?.let {
-            authRepo.updateAva(it) // for final submit and save new ava to user in BackEnd
+            val result = authRepo.updateAva(it) // for final submit and save new ava to user in BackEnd
+            when (result) {
+                is Resource.Success -> {
+                    _uiEffect.send(UiEffect.SnackbarMsg("Successfully changed ava"))
+                }
+                is Resource.Error -> {
+                    _uiEffect.send(UiEffect.SnackbarMsg(result.message ?: "Unknown error submitting ava"))
+                }
+            }
         }
     }
 

@@ -36,23 +36,6 @@ class FileRepoImpl(
     val fileStatefulRepo: FileStatefulRepo
 ) : FileRepo {
 
-    override suspend fun postFile(requestBodyFile: MultipartBody.Part): Resource<String> {
-        try {
-            val response = fileApi.postFile(requestBodyFile)
-            if (response.status == "ok") {
-                response.body?.let { url ->
-                    return Resource.Success(url)
-                } ?: run {
-                    return Resource.Error("Success, but user data not found")
-                }
-            } else {
-                return Resource.Error(response.error ?: "Unknown error occurred")
-            }
-        } catch (e: Exception) {
-            return Resource.Error(e.message ?: "Unknown exception")
-        }
-    }
-
     override fun copyFileFromExternal(externalUri: Uri): Resource<File> {
         val parcelFileDescriptor = context.contentResolver.openFileDescriptor(
             externalUri, "r", null
@@ -90,6 +73,23 @@ class FileRepoImpl(
         val part = MultipartBody.Part.createFormData("image", imageFile.name, body)
         val result = Resource.Success(part)
         return result
+    }
+
+    override suspend fun postFile(requestBodyFile: MultipartBody.Part): Resource<String> {
+        try {
+            val response = fileApi.postFile(requestBodyFile)
+            if (response.status == "ok") {
+                response.body?.let { url ->
+                    return Resource.Success(url)
+                } ?: run {
+                    return Resource.Error("Success, but user data not found")
+                }
+            } else {
+                return Resource.Error(response.error ?: "Unknown error occurred")
+            }
+        } catch (e: Exception) {
+            return Resource.Error(e.message ?: "Unknown exception")
+        }
     }
 
     override fun provideUriForCamera(): Uri {
